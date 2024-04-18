@@ -1,0 +1,21 @@
+source leaprc.water.tip3p
+source leaprc.gaff
+
+loadAmberParams ./output/BNZ.frcmod
+loadAmberParams ./output/IPH.frcmod
+
+bnz = loadMol2 ./output/BNZ.mol2
+iph = loadMol2 ./output/IPH.mol2
+
+saveAmberParm bnz ./output/BNZ.prmtop ./output/BNZ.inpcrd
+savePdb bnz ./output/BNZ.pdb
+
+saveAmberParm iph ./output/IPH.prmtop ./output/IPH.inpcrd
+savePdb iph ./output/IPH.pdb
+
+solvateBox iph TIP3PBOX 15.0
+remove iph iph.1
+saveAmberParm iph ./output/solvent.prmtop ./output/solvent.inpcrd
+savePdb iph ./output/solvent.pdb
+
+quit
