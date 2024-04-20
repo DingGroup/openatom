@@ -14,8 +14,17 @@ saveAmberParm iph ./output/IPH.prmtop ./output/IPH.inpcrd
 savePdb iph ./output/IPH.pdb
 
 solvateBox iph TIP3PBOX 15.0
+
+saveAmberParm iph ./output/IPH_solvated.prmtop ./output/IPH_solvated.inpcrd
+savePdb iph ./output/IPH_solvated.pdb
+
 remove iph iph.1
 saveAmberParm iph ./output/solvent.prmtop ./output/solvent.inpcrd
 savePdb iph ./output/solvent.pdb
+
+bnz = combine {bnz, iph}
+setBox bnz "centers"
+saveAmberParm bnz ./output/BNZ_solvated.prmtop ./output/BNZ_solvated.inpcrd
+savePdb bnz ./output/BNZ_solvated.pdb
 
 quit
