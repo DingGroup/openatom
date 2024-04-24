@@ -7,8 +7,8 @@ import xml.etree.ElementTree as ET
 from sys import exit
 from atom.functions import (
     align_coordinates,
-    get_graph,
-    get_maximum_common_substructure,
+    make_graph,
+    compute_mcs,
     label_particles,
     merge_and_index_particles,
     merge_constraints,
@@ -68,7 +68,7 @@ liga = ET.fromstring(liga_xml)
 ligb = ET.fromstring(ligb_xml)
 
 
-mcs = get_maximum_common_substructure(liga_top, ligb_top)
+mcs = compute_mcs(liga_top, ligb_top)
 liga_common_atoms = list(mcs.keys())
 liga_alchem_atoms = [
     i for i in range(liga_top.getNumAtoms()) if i not in liga_common_atoms
@@ -108,7 +108,7 @@ def get_energy(system, name, coor):
     return state.getPotentialEnergy()
 
 
-graphs = [get_graph(liga_top), get_graph(ligb_top)]
+graphs = [make_graph(liga_top), make_graph(ligb_top)]
 for lig, common_atoms, graph in zip(ligs, ligs_common_atoms, graphs):
     label_particles(lig, common_atoms, graph)
 

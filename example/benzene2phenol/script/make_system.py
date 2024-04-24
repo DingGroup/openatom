@@ -4,7 +4,7 @@ import openmm.app as app
 import openmm.unit as unit
 import mdtraj
 from atom.functions import (
-    get_maximum_common_substructure,
+    compute_mcs,
     get_nonbonded_force,
     get_nonbonded_parameters,
 )
@@ -31,7 +31,7 @@ exit()
 
 bnz_top = mdtraj.load_mol2("./structure/output/BNZ.mol2").topology
 iph_top = mdtraj.load_mol2("./structure/output/IPH.mol2").topology
-mcs = get_maximum_common_substructure(iph_top, bnz_top)
+mcs = compute_mcs(iph_top, bnz_top)
 
 lig_0_common_atoms = list(mcs.keys())
 lig_0_alchem_atoms = [i for i in range(iph_top.n_atoms) if i not in lig_0_common_atoms]
