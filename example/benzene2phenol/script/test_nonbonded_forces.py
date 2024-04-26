@@ -17,6 +17,7 @@ solvent_system = solvent_prmtop.createSystem(
     constraints=app.HBonds,
     switchDistance=1.0 * unit.nanometer,
 )
+solvent_top = solvent_prmtop.topology
 solvent_coor = app.AmberInpcrdFile("./structure/output/solvent.inpcrd").getPositions()
 solvent_coor = np.array(solvent_coor.value_in_unit(unit.nanometer))
 
@@ -95,20 +96,37 @@ liga = ET.fromstring(liga_xml)
 ligb = ET.fromstring(ligb_xml)
 ligs = [liga, ligb]
 
+ligs_top = [liga_top, ligb_top]
+
+
 mcs = compute_mcs(liga_top, ligb_top)
 liga_common_atoms = list(mcs.keys())
 ligb_common_atoms = [mcs[i] for i in liga_common_atoms]
 ligs_common_atoms = [liga_common_atoms, ligb_common_atoms]
 
+graphs = [make_graph(liga_top), make_graph(ligb_top)]
+
+# for lig, common_atoms, graph in zip(ligs, ligs_common_atoms, graphs):
+#     label_particles(lig, common_atoms, graph)
+# particles, top = merge_and_index_particles(ligs, ligs_top, ligs_common_atoms, solvent, solvent_top)
+# exit()
+
 liga_coor = liga_solvated_coor[0 : liga_top.getNumAtoms()]
 ligb_coor = ligb_solvated_coor[0 : ligb_top.getNumAtoms()]
 
 ligs_coor = [liga_coor, ligb_coor]
-graphs = [make_graph(liga_top), make_graph(ligb_top)]
+
 scaling_factors = [[0.0, 0.0], [1.0, 1.0]]
 
-system_xml, coor = make_alchemical_system(
-    ligs, graphs, ligs_common_atoms, ligs_coor, scaling_factors, solvent, solvent_coor
+system_xml, top, coor = make_alchemical_system(
+    ligs,
+    ligs_top,
+    ligs_common_atoms,
+    ligs_coor,
+    scaling_factors,
+    solvent,
+    solvent_top,
+    solvent_coor,
 )
 
 ligb_solvated_coor[0 : ligb_coor.shape[0]] = ligs_coor[1]

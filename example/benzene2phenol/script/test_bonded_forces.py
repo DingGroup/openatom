@@ -10,7 +10,7 @@ from atom.functions import (
     make_graph,
     compute_mcs,
     label_particles,
-    merge_and_index_particles,
+    merge_particles_and_topologies,
     merge_constraints,
     merge_harmonic_bonds,
     merge_harmonic_angles,
@@ -116,7 +116,7 @@ system_xml = ET.Element("System", solvent.attrib)
 system_xml.append(solvent.find("./PeriodicBoxVectors"))
 
 
-particles = merge_and_index_particles(ligs, ligs_common_atoms, solvent)
+particles = merge_particles_and_topologies(ligs, ligs_common_atoms, solvent)
 system_xml.append(particles)
 
 
