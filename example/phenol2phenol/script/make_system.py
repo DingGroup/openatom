@@ -5,7 +5,6 @@ import openmm.unit as unit
 import numpy as np
 import xml.etree.ElementTree as ET
 import os
-from sys import exit
 import pickle
 import time
 from atom.functions import (
@@ -36,9 +35,7 @@ envi_coor = app.AmberInpcrdFile("./structure/output/solvent.inpcrd").getPosition
 envi_coor = np.array(envi_coor.value_in_unit(unit.nanometer))
 
 
-liga_prmtop = app.AmberPrmtopFile(
-    "./structure/output/BNZ.prmtop", envi_top.getPeriodicBoxVectors()
-)
+liga_prmtop = app.AmberPrmtopFile("./structure/output/IPH.prmtop", envi_top.getPeriodicBoxVectors())
 liga_system = liga_prmtop.createSystem(
     nonbondedMethod=app.PME,
     nonbondedCutoff=1.0 * unit.nanometer,
@@ -46,13 +43,10 @@ liga_system = liga_prmtop.createSystem(
     switchDistance=0.9 * unit.nanometer,
 )
 liga_top = liga_prmtop.topology
-liga_coor = app.AmberInpcrdFile("./structure/output/BNZ.inpcrd").getPositions()
+liga_coor = app.AmberInpcrdFile("./structure/output/IPH.inpcrd").getPositions()
 liga_coor = np.array(liga_coor.value_in_unit(unit.nanometer))
 
-
-ligb_prmtop = app.AmberPrmtopFile(
-    "./structure/output/IPH.prmtop", envi_top.getPeriodicBoxVectors()
-)
+ligb_prmtop = app.AmberPrmtopFile("./structure/output/IPH.prmtop", envi_top.getPeriodicBoxVectors())
 ligb_system = ligb_prmtop.createSystem(
     nonbondedMethod=app.PME,
     nonbondedCutoff=1.0 * unit.nanometer,
@@ -62,6 +56,7 @@ ligb_system = ligb_prmtop.createSystem(
 ligb_top = ligb_prmtop.topology
 ligb_coor = app.AmberInpcrdFile("./structure/output/IPH.inpcrd").getPositions()
 ligb_coor = np.array(ligb_coor.value_in_unit(unit.nanometer))
+
 
 envi_xml = XmlSerializer.serializeSystem(envi_system)
 liga_xml = XmlSerializer.serializeSystem(liga_system)
@@ -73,8 +68,9 @@ liga = ET.fromstring(liga_xml)
 ligb = ET.fromstring(ligb_xml)
 ligs = [liga, ligb]
 
-with open("./output/mcs.pkl", "rb") as f:
-    mcs = pickle.load(f)
+mcs = {0:0, 1:1, 2:2, 3:3, 4:4, 
+       5:5, 7:7, 8:8, 9:9, 
+       10:10, 11:11}
 
 liga_common_atoms = list(mcs.keys())
 ligb_common_atoms = [mcs[i] for i in liga_common_atoms]
@@ -125,7 +121,7 @@ for lambdas in lambdas_list:
     print(lambdas)
     if phase == "vacuum":
         envi, envi_top, envi_coor = None, None, None
-
+        
     system_xml, top, coor = make_alchemical_system(
         ligs,
         [liga_top, ligb_top],
@@ -148,11 +144,14 @@ for lambdas in lambdas_list:
         encoding="utf-8",
     )
 
+
     omm.app.PDBFile.writeFile(
         top, coor * 10, f"./output/{phase}_phase/system.pdb", keepIds=True
     )
 
+
     with open(f"./output/{phase}_phase/topology.pkl", "wb") as file_handle:
         pickle.dump(top, file_handle)
+
 
     make_psf_from_topology(top, f"./output/{phase}_phase/topology.psf")

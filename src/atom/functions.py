@@ -1,25 +1,14 @@
 import networkx as nx
 import openmm
+import openmm.app
 import xml.etree.ElementTree as ET
 import copy
 import numpy as np
 from scipy.spatial.transform import Rotation
 from collections import defaultdict
+import multiprocessing as mp
+from itertools import chain, combinations, product
 import re
-
-
-def make_scaling_factors(n_elec: int, n_vdw: int):
-    scaling_factors = []
-    for i in range(n_elec + 1):
-        scaling_factors.append([(1 - i / n_elec, 1.0), (0.0, 0.0)])
-
-    for i in range(1, n_vdw + 1):
-        scaling_factors.append([(0.0, 1 - i / n_vdw), (0.0, i / n_vdw)])
-
-    for i in range(1, n_elec + 1):
-        scaling_factors.append([(0.0, 0.0), (i / n_elec, 1.0)])
-
-    return scaling_factors
 
 
 def make_alchemical_system(
@@ -38,8 +27,12 @@ def make_alchemical_system(
     for ligand, common_atoms, graph in zip(ligs, lig_common_particles, lig_graphs):
         label_particles(ligand, common_atoms, graph)
 
-    system = ET.Element("System", environment.attrib)
-    system.append(environment.find("./PeriodicBoxVectors"))
+    if environment is not None:
+        system = ET.Element("System", environment.attrib)
+        system.append(environment.find("./PeriodicBoxVectors"))
+    else:
+        system = ET.Element("System", ligs[0].attrib)
+        system.append(ligs[0].find("./PeriodicBoxVectors"))
 
     particles, topology = merge_particles_and_topologies(
         ligs, lig_tops, lig_common_particles, environment, environment_top
@@ -86,9 +79,11 @@ def make_alchemical_system(
                 if p.get("class") == "soft-core":
                     j = int(p.get("idx"))
                     coor[j] = lig_coor[i]
-    for i, p in enumerate(environment.iterfind("./Particles/Particle")):
-        j = int(p.get("idx"))
-        coor[j] = environment_coor[i]
+
+    if environment is not None:
+        for i, p in enumerate(environment.iterfind("./Particles/Particle")):
+            j = int(p.get("idx"))
+            coor[j] = environment_coor[i]
 
     coor = np.array(coor)
 
@@ -116,7 +111,10 @@ def align_coordinates(
     x2_center = x2[atoms2].mean(axis=0)
     x2 = x2 - x2_center
     r = Rotation.align_vectors(x1[atoms1] - x1_center, x2[atoms2])[0]
-    return r.apply(x2) + x1_center
+    x2 = r.apply(x2)
+    x2 = x2 + x1_center
+    x2[atoms2] = x1[atoms1]
+    return x2
 
 
 def make_graph(topology: openmm.app.Topology) -> nx.Graph:
@@ -153,7 +151,7 @@ def make_graph(topology: openmm.app.Topology) -> nx.Graph:
     return g
 
 
-def compute_mcs(top1: openmm.app.Topology, top2: openmm.app.Topology) -> dict:
+def compute_mcs_ISMAGS(top1: openmm.app.Topology, top2: openmm.app.Topology) -> dict:
     """Compute the maximum common substructure between two topologies.
 
     Each topology is converted to a NetworkX graph using the make_graph function and
@@ -200,6 +198,72 @@ def compute_mcs(top1: openmm.app.Topology, top2: openmm.app.Topology) -> dict:
     largest_component = components[np.argmax(len_components)]
 
     connected_lcs = {i: lcs[i] for i in largest_component}
+
+    if key == "first":
+        return connected_lcs
+    else:
+        return {v: k for k, v in connected_lcs.items()}
+
+
+def compute_mapping(ga, gb, source):
+    bfs_successors = list(nx.bfs_successors(gb, source))
+    nodes = list(chain(*[v for _, v in bfs_successors]))
+    nodes.insert(0, source)
+
+    nm = nx.algorithms.isomorphism.categorical_node_match("element", "")
+    em = nx.algorithms.isomorphism.categorical_edge_match("type", "")
+    for n in nodes:
+        gb.remove_node(n)
+        gm = nx.algorithms.isomorphism.GraphMatcher(
+            ga, gb, node_match=nm, edge_match=em
+        )
+        if gm.subgraph_is_isomorphic():
+            return gm.mapping
+
+
+def compute_mcs_VF2(
+    top1: openmm.app.Topology, top2: openmm.app.Topology, timeout=10
+) -> dict:
+    if top1.getNumAtoms() >= top2.getNumAtoms():
+        top_large, top_small = top1, top2
+        key = "first"
+    else:
+        top_large, top_small = top2, top1
+        key = "second"
+
+    gl = make_graph(top_large)
+    gs = make_graph(top_small)
+
+    nodes_with_one_bond = [n for n in gs.nodes if gs.degree(n) == 1]
+
+    if mp.cpu_count() > 16 and len(nodes_with_one_bond) > 16:
+        num_processes = 16
+    else:
+        num_processes = min(mp.cpu_count(), len(nodes_with_one_bond))
+
+    mappings = []
+    with mp.Pool(num_processes) as pool:
+        futures = [
+            pool.apply_async(compute_mapping, args=(gl, gs, n))
+            for n in nodes_with_one_bond
+        ]
+        pool.close()
+        for future in futures:
+            try:
+                mapping = future.get(timeout=timeout)
+                mappings.append(mapping)
+            except mp.TimeoutError:
+                None
+    M = max([len(m) for m in mappings])
+    mappings = [m for m in mappings if len(m) == M]
+    mapping = min(mappings, key=lambda x: sum([abs(k - v) for k, v in x.items()]))
+
+    subgraph_large = gl.subgraph(list(mapping.keys()))
+    components = list(nx.connected_components(subgraph_large))
+    len_components = [len(c) for c in components]
+    largest_component = components[np.argmax(len_components)]
+
+    connected_lcs = {i: mapping[i] for i in largest_component}
 
     if key == "first":
         return connected_lcs
@@ -290,6 +354,7 @@ def merge_particles_and_topologies(
     residue = topology.addResidue("LIG", chain)
 
     p_idx = 0
+    atom_names = set()
     for i in range(len(common_particles[0])):
         lig = ligands[0]
         j = common_particles[0][i]
@@ -300,6 +365,7 @@ def merge_particles_and_topologies(
 
         atom = ligand_atoms[0][j]
         topology.addAtom(atom.name, atom.element, residue)
+        atom_names.add(atom.name)
 
         for k in range(1, len(ligands)):
             lig = ligands[k]
@@ -309,7 +375,6 @@ def merge_particles_and_topologies(
         p_idx += 1
 
     ## add soft-core particles from all ligands
-    atom_names = set()
     for lig, atoms in zip(ligands, ligand_atoms):
         for p, atom in zip(lig.iterfind("./Particles/Particle"), atoms):
             if p.get("class") == "soft-core":
@@ -331,21 +396,22 @@ def merge_particles_and_topologies(
                     atom_names.add(name)
 
     ## add envirionment particles
-    chain = topology.addChain()
-    residue = topology.addResidue("ENV", chain)
+    if environment is not None:
+        chain = topology.addChain()
+        residue = topology.addResidue("ENV", chain)
 
-    for chain in environment_topology.chains():
-        new_chain = topology.addChain(id=chain.id)
-        for residue in chain.residues():
-            new_residue = topology.addResidue(residue.name, new_chain)
-            for atom in residue.atoms():
-                i = int(atom.index)
-                p = environment.find("./Particles")[i]
-                particles.append(copy.deepcopy(p))
-                p.set("idx", str(p_idx))
-                p_idx += 1
+        for chain in environment_topology.chains():
+            new_chain = topology.addChain(id=chain.id)
+            for residue in chain.residues():
+                new_residue = topology.addResidue(residue.name, new_chain)
+                for atom in residue.atoms():
+                    i = int(atom.index)
+                    p = environment.find("./Particles")[i]
+                    particles.append(copy.deepcopy(p))
+                    p.set("idx", str(p_idx))
+                    p_idx += 1
 
-                topology.addAtom(atom.name, atom.element, new_residue)
+                    topology.addAtom(atom.name, atom.element, new_residue)
 
     ## add bonds to the topology
     topology_atoms = list(topology.atoms())
@@ -356,15 +422,20 @@ def merge_particles_and_topologies(
             j = int(lig.find("./Particles")[j].get("idx"))
             topology.addBond(topology_atoms[i], topology_atoms[j])
 
-    for bond in environment_topology.bonds():
-        i, j = bond.atom1.index, bond.atom2.index
-        i = int(environment.find("./Particles")[i].get("idx"))
-        j = int(environment.find("./Particles")[j].get("idx"))
-        topology.addBond(topology_atoms[i], topology_atoms[j])
+    if environment_topology is not None:
+        for bond in environment_topology.bonds():
+            i, j = bond.atom1.index, bond.atom2.index
+            i = int(environment.find("./Particles")[i].get("idx"))
+            j = int(environment.find("./Particles")[j].get("idx"))
+            topology.addBond(topology_atoms[i], topology_atoms[j])
 
     ## set periodic box vectors
-    topology.setPeriodicBoxVectors(environment_topology.getPeriodicBoxVectors())
+    if environment_topology is not None:
+        topology.setPeriodicBoxVectors(environment_topology.getPeriodicBoxVectors())
 
+    if ligand_topologies[0].getPeriodicBoxVectors() is not None:
+        topology.setPeriodicBoxVectors(ligand_topologies[0].getPeriodicBoxVectors())
+        
     return particles, topology
 
 
@@ -410,11 +481,12 @@ def merge_constraints(ligands: list[ET.Element], environment: ET.Element) -> ET.
                     )
 
     ## add constraints from the environment
-    for c in environment.iterfind("./Constraints/Constraint"):
-        i1, i2 = int(c.get("p1")), int(c.get("p2"))
-        j1, j2 = _get_idx(environment, [i1, i2])
-        j1, j2 = str(j1), str(j2)
-        ET.SubElement(cons, "Constraint", {"d": c.get("d"), "p1": j1, "p2": j2})
+    if environment is not None:
+        for c in environment.iterfind("./Constraints/Constraint"):
+            i1, i2 = int(c.get("p1")), int(c.get("p2"))
+            j1, j2 = _get_idx(environment, [i1, i2])
+            j1, j2 = str(j1), str(j2)
+            ET.SubElement(cons, "Constraint", {"d": c.get("d"), "p1": j1, "p2": j2})
 
     return cons
 
@@ -446,9 +518,10 @@ def merge_harmonic_bonds(
     assert len(ligand_bonds) == len(ligands)
 
     env_bonds = None
-    for f in environment.iterfind("./Forces/Force"):
-        if f.get("type") == "HarmonicBondForce":
-            env_bonds = f
+    if environment is not None:
+        for f in environment.iterfind("./Forces/Force"):
+            if f.get("type") == "HarmonicBondForce":
+                env_bonds = f
 
     for (_, lambda_vdw), ligand_bond, ligand in zip(lambdas, ligand_bonds, ligands):
         for b in ligand_bond.iterfind("./Bonds/Bond"):
@@ -477,13 +550,14 @@ def merge_harmonic_bonds(
                     {"d": b.get("d"), "k": str(float(b.get("k"))), "p1": j1, "p2": j2},
                 )
 
-    for b in env_bonds.iterfind("./Bonds/Bond"):
-        i1, i2 = int(b.get("p1")), int(b.get("p2"))
-        j1, j2 = _get_idx(environment, [i1, i2])
-        j1, j2 = str(j1), str(j2)
-        ET.SubElement(
-            bonds, "Bond", {"d": b.get("d"), "k": b.get("k"), "p1": j1, "p2": j2}
-        )
+    if env_bonds is not None:
+        for b in env_bonds.iterfind("./Bonds/Bond"):
+            i1, i2 = int(b.get("p1")), int(b.get("p2"))
+            j1, j2 = _get_idx(environment, [i1, i2])
+            j1, j2 = str(j1), str(j2)
+            ET.SubElement(
+                bonds, "Bond", {"d": b.get("d"), "k": b.get("k"), "p1": j1, "p2": j2}
+            )
 
     return force
 
@@ -513,9 +587,10 @@ def merge_harmonic_angles(
     assert len(ligand_angles) == len(ligands)
 
     env_angles = None
-    for f in environment.iterfind("./Forces/Force"):
-        if f.get("type") == "HarmonicAngleForce":
-            env_angles = f
+    if environment is not None:
+        for f in environment.iterfind("./Forces/Force"):
+            if f.get("type") == "HarmonicAngleForce":
+                env_angles = f
 
     for (_, lambda_vdw), ligand_angle, ligand in zip(lambdas, ligand_angles, ligands):
         for a in ligand_angle.iterfind("./Angles/Angle"):
@@ -551,21 +626,22 @@ def merge_harmonic_angles(
                     },
                 )
 
-    for a in env_angles.iterfind("./Angles/Angle"):
-        i1, i2, i3 = int(a.get("p1")), int(a.get("p2")), int(a.get("p3"))
-        j1, j2, j3 = _get_idx(environment, [i1, i2, i3])
+    if env_angles is not None:
+        for a in env_angles.iterfind("./Angles/Angle"):
+            i1, i2, i3 = int(a.get("p1")), int(a.get("p2")), int(a.get("p3"))
+            j1, j2, j3 = _get_idx(environment, [i1, i2, i3])
 
-        ET.SubElement(
-            angles,
-            "Angle",
-            {
-                "a": str(float(a.get("a"))),
-                "k": str(float(a.get("k"))),
-                "p1": str(j1),
-                "p2": str(j2),
-                "p3": str(j3),
-            },
-        )
+            ET.SubElement(
+                angles,
+                "Angle",
+                {
+                    "a": str(float(a.get("a"))),
+                    "k": str(float(a.get("k"))),
+                    "p1": str(j1),
+                    "p2": str(j2),
+                    "p3": str(j3),
+                },
+            )
 
     return force
 
@@ -595,11 +671,14 @@ def merge_periodic_torsions(
     assert len(ligand_torsions) == len(ligands)
 
     env_torsion = None
-    for f in environment.iterfind("./Forces/Force"):
-        if f.get("type") == "PeriodicTorsionForce":
-            env_torsion = f
+    if environment is not None:
+        for f in environment.iterfind("./Forces/Force"):
+            if f.get("type") == "PeriodicTorsionForce":
+                env_torsion = f
 
-    for (_, lambda_vdw), ligand_torsion, ligand in zip(lambdas, ligand_torsions, ligands):
+    for (_, lambda_vdw), ligand_torsion, ligand in zip(
+        lambdas, ligand_torsions, ligands
+    ):
         for t in ligand_torsion.iterfind("./Torsions/Torsion"):
             i1, i2, i3, i4 = map(
                 int, [t.get("p1"), t.get("p2"), t.get("p3"), t.get("p4")]
@@ -640,23 +719,26 @@ def merge_periodic_torsions(
                     },
                 )
 
-    for t in env_torsion.iterfind("./Torsions/Torsion"):
-        i1, i2, i3, i4 = map(int, [t.get("p1"), t.get("p2"), t.get("p3"), t.get("p4")])
-        j1, j2, j3, j4 = _get_idx(environment, [i1, i2, i3, i4])
+    if env_torsion is not None:
+        for t in env_torsion.iterfind("./Torsions/Torsion"):
+            i1, i2, i3, i4 = map(
+                int, [t.get("p1"), t.get("p2"), t.get("p3"), t.get("p4")]
+            )
+            j1, j2, j3, j4 = _get_idx(environment, [i1, i2, i3, i4])
 
-        ET.SubElement(
-            torsions,
-            "Torsion",
-            {
-                "k": str(float(t.get("k"))),
-                "p1": str(j1),
-                "p2": str(j2),
-                "p3": str(j3),
-                "p4": str(j4),
-                "periodicity": t.get("periodicity"),
-                "phase": t.get("phase"),
-            },
-        )
+            ET.SubElement(
+                torsions,
+                "Torsion",
+                {
+                    "k": str(float(t.get("k"))),
+                    "p1": str(j1),
+                    "p2": str(j2),
+                    "p3": str(j3),
+                    "p4": str(j4),
+                    "periodicity": t.get("periodicity"),
+                    "phase": t.get("phase"),
+                },
+            )
 
     return force
 
@@ -666,10 +748,15 @@ def merge_nonbonded_forces(
     lambdas: list,
     environment: ET.Element,
 ) -> ET.Element:
-    for f in environment.iterfind("./Forces/Force"):
-        if f.get("type") == "NonbondedForce":
-            attrib = f.attrib
-    attrib["dispersionCorrection"] = "0"
+    if environment is not None:
+        for f in environment.iterfind("./Forces/Force"):
+            if f.get("type") == "NonbondedForce":
+                attrib = f.attrib
+        # attrib["dispersionCorrection"] = "0"
+    else:
+        for f in ligands[0].iterfind("./Forces/Force"):
+            if f.get("type") == "NonbondedForce":
+                attrib = f.attrib
 
     force = ET.Element("Force", attrib)
     ET.SubElement(force, "GlobalParameters")
@@ -681,18 +768,24 @@ def merge_nonbonded_forces(
     for i, ligand in enumerate(ligands):
         for p in ligand.iterfind("./Particles/Particle"):
             if i == 0:
+                ## all all particles from the first ligand
                 ET.SubElement(
                     particles, "Particle", {"eps": "0.0", "q": "0.0", "sig": "0.0"}
                 )
             if i > 0 and p.get("class") == "soft-core":
+                ## only add soft-core particles from other ligands
                 ET.SubElement(
                     particles,
                     "Particle",
                     {"eps": "0.0", "q": "0.0", "sig": "0.0"},
                 )
 
-    for p in environment.iterfind("./Particles/Particle"):
-        ET.SubElement(particles, "Particle", {"eps": "0.0", "q": "0.0", "sig": "0.0"})
+    if environment is not None:
+        ## add environment particles
+        for p in environment.iterfind("./Particles/Particle"):
+            ET.SubElement(
+                particles, "Particle", {"eps": "0.0", "q": "0.0", "sig": "0.0"}
+            )
 
     ligand_nfs = []
     for ligand in ligands:
@@ -702,30 +795,33 @@ def merge_nonbonded_forces(
     assert len(ligand_nfs) == len(ligands)
 
     env_nf = None
-    for f in environment.iterfind("./Forces/Force"):
-        if f.get("type") == "NonbondedForce":
-            env_nf = f
+    if environment is not None:
+        for f in environment.iterfind("./Forces/Force"):
+            if f.get("type") == "NonbondedForce":
+                env_nf = f
 
     for (lambda_elec, lambda_vdw), lig_nf, ligand in zip(lambdas, ligand_nfs, ligands):
         for i, p in enumerate(lig_nf.iterfind("./Particles/Particle")):
             j = int(ligand.find("./Particles")[i].get("idx"))
 
             ## if the ligand particle is a common particle, scale eps, sig and q using svdw
+            ## this will allow us to change atom types of common particles
             if ligand.find("./Particles")[i].get("class") == "common":
                 eps = float(p.get("eps")) * lambda_vdw
                 q = float(p.get("q")) * lambda_vdw
                 sigma = float(p.get("sig")) * lambda_vdw
 
                 current_eps = float(particles[j].get("eps"))
-                current_sigma = float(particles[j].get("sig"))
                 current_q = float(particles[j].get("q"))
+                current_sigma = float(particles[j].get("sig"))
 
                 particles[j].set("eps", str(current_eps + eps))
                 particles[j].set("q", str(current_q + q))
                 particles[j].set("sig", str(current_sigma + sigma))
 
-            ## if the ligand particle is a soft-core particle, set eps and sig to 0 and scale its
-            ## charge using selec. Also move the charge to the common particle through which it
+            ## if the ligand particle is a soft-core particle, set eps to 0 and sig to 1 and
+            ## scale its charge using selec.
+            ## To maintain the net charge, the charge that is removed from a soft-core particle is ## added to the common particle through which the soft-core particle
             ## is connected to the common substructure.
             else:
                 particles[j].set("eps", "0")
@@ -738,15 +834,18 @@ def merge_nonbonded_forces(
 
                 ## set the charge of the attached common particle
                 k = ligand.find("./Particles")[i].get("attach_idx")
-                j = int(ligand.find("./Particles")[int(k)].get("idx"))
-                current_q = float(particles[j].get("q"))
-                particles[j].set("q", str(current_q + (1 - lambda_elec) * q * lambda_vdw))
+                h = int(ligand.find("./Particles")[int(k)].get("idx"))
+                current_q = float(particles[h].get("q"))
+                particles[h].set(
+                    "q", str(current_q + (1 - lambda_elec) * q * lambda_vdw)
+                )
 
-    for i, p in enumerate(env_nf.iterfind("./Particles/Particle")):
-        j = int(environment.find("./Particles")[i].get("idx"))
-        particles[j].set("eps", p.get("eps"))
-        particles[j].set("sig", p.get("sig"))
-        particles[j].set("q", p.get("q"))
+    if env_nf is not None:
+        for i, p in enumerate(env_nf.iterfind("./Particles/Particle")):
+            j = int(environment.find("./Particles")[i].get("idx"))
+            particles[j].set("eps", p.get("eps"))
+            particles[j].set("sig", p.get("sig"))
+            particles[j].set("q", p.get("q"))
 
     ## exceptions
     exception_dict = defaultdict(lambda: {"eps": 0, "q": 0, "sig": 0})
@@ -777,13 +876,27 @@ def merge_nonbonded_forces(
                 exception_dict[(j1, j2)]["q"] = float(e.get("q")) * lambda_vdw
                 exception_dict[(j1, j2)]["sig"] = float(e.get("sig"))
 
-    for e in env_nf.iterfind("./Exceptions/Exception"):
-        i1, i2 = int(e.get("p1")), int(e.get("p2"))
-        j1, j2 = _get_idx(environment, [i1, i2])
-        j1, j2 = sorted([j1, j2])
-        exception_dict[(j1, j2)]["eps"] = float(e.get("eps"))
-        exception_dict[(j1, j2)]["q"] = float(e.get("q"))
-        exception_dict[(j1, j2)]["sig"] = float(e.get("sig"))
+    ## exceptions for soft-core particles from different ligands
+    for liganda, ligandb in combinations(ligands, 2):
+        for p, q in product(
+            liganda.iterfind("./Particles/Particle"),
+            ligandb.iterfind("./Particles/Particle"),
+        ):
+            if p.get("class") == "soft-core" and q.get("class") == "soft-core":
+                j1, j2 = int(p.get("idx")), int(q.get("idx"))
+                j1, j2 = sorted([j1, j2])
+                exception_dict[(j1, j2)]["eps"] = 0
+                exception_dict[(j1, j2)]["q"] = 0
+                exception_dict[(j1, j2)]["sig"] = 0
+
+    if env_nf is not None:
+        for e in env_nf.iterfind("./Exceptions/Exception"):
+            i1, i2 = int(e.get("p1")), int(e.get("p2"))
+            j1, j2 = _get_idx(environment, [i1, i2])
+            j1, j2 = sorted([j1, j2])
+            exception_dict[(j1, j2)]["eps"] = float(e.get("eps"))
+            exception_dict[(j1, j2)]["q"] = float(e.get("q"))
+            exception_dict[(j1, j2)]["sig"] = float(e.get("sig"))
 
     exceptions = ET.SubElement(force, "Exceptions")
     for (j1, j2), e in exception_dict.items():
@@ -816,17 +929,39 @@ def make_custom_nonbonded_force(
         "lambda_a = lambda1 + lambda2",
     ]
 
+    lig_nfs = []
+    for ligand in ligands:
+        for f in ligand.iterfind("./Forces/Force"):
+            if f.get("type") == "NonbondedForce":
+                lig_nfs.append(f)
+    assert len(lig_nfs) == len(ligands)
+
+    env_nf = None
+    if environment is not None:
+        method = "2"  ## 2: CutoffPeriodic
+        for f in environment.iterfind("./Forces/Force"):
+            if f.get("type") == "NonbondedForce":
+                env_nf = f
+        cutoff = env_nf.get("cutoff")
+        switch_distance = env_nf.get("switchingDistance")
+        long_range_correction = env_nf.get("dispersionCorrection")
+    else:
+        method = "1"  ## 1: CutoffNonPeriodic
+        cutoff = lig_nfs[0].get("cutoff")
+        switch_distance = lig_nfs[0].get("switchingDistance")
+        long_range_correction = lig_nfs[0].get("dispersionCorrection")
+
     force = ET.Element(
         "Force",
         {
-            "cutoff": "1.2",
+            "cutoff": cutoff,
             "energy": ";".join(formula),
             "forceGroup": "0",
-            "method": "2",
+            "method": method,
             "name": "CustomNonbondedForce",
-            "switchingDistance": "1.0",
+            "switchingDistance": switch_distance,
             "type": "CustomNonbondedForce",
-            "useLongRangeCorrection": "0",
+            "useLongRangeCorrection": long_range_correction,
             "useSwitchingFunction": "1",
             "version": "3",
         },
@@ -851,20 +986,10 @@ def make_custom_nonbonded_force(
                 ET.SubElement(particles, "Particle", {"param1": "0", "param2": "0"})
             if i > 0 and p.get("class") == "soft-core":
                 ET.SubElement(particles, "Particle", {"param1": "0", "param2": "0"})
-    for p in environment.iterfind("./Particles/Particle"):
-        ET.SubElement(particles, "Particle", {"param1": "0", "param2": "0"})
 
-    lig_nfs = []
-    for ligand in ligands:
-        for f in ligand.iterfind("./Forces/Force"):
-            if f.get("type") == "NonbondedForce":
-                lig_nfs.append(f)
-    assert len(lig_nfs) == len(ligands)
-
-    env_nf = None
-    for f in environment.iterfind("./Forces/Force"):
-        if f.get("type") == "NonbondedForce":
-            env_nf = f
+    if environment is not None:
+        for p in environment.iterfind("./Particles/Particle"):
+            ET.SubElement(particles, "Particle", {"param1": "0", "param2": "0"})
 
     for idx_lig, ((_, lambda_vdw), lig_nf, ligand) in enumerate(
         zip(lambdas, lig_nfs, ligands)
@@ -888,12 +1013,13 @@ def make_custom_nonbonded_force(
                 particles[j].set("param3", str(lambda_vdw))
                 particles[j].set("param4", str(idx_lig + 1))
 
-    for i, p in enumerate(env_nf.iterfind("./Particles/Particle")):
-        j = int(environment.find("./Particles")[i].get("idx"))
-        particles[j].set("param1", p.get("eps"))
-        particles[j].set("param2", p.get("sig"))
-        particles[j].set("param3", "0")
-        particles[j].set("param4", "0")
+    if env_nf is not None:
+        for i, p in enumerate(env_nf.iterfind("./Particles/Particle")):
+            j = int(environment.find("./Particles")[i].get("idx"))
+            particles[j].set("param1", p.get("eps"))
+            particles[j].set("param2", p.get("sig"))
+            particles[j].set("param3", "0")
+            particles[j].set("param4", "0")
 
     interaction_groups = ET.SubElement(force, "InteractionGroups")
     interaction_group = ET.SubElement(interaction_groups, "InteractionGroup")
@@ -906,14 +1032,27 @@ def make_custom_nonbonded_force(
                 ET.SubElement(set2, "Particle", {"index": j})
             if i == 0 and p.get("class") == "soft-core":
                 ET.SubElement(set1, "Particle", {"index": j})
+                ET.SubElement(set2, "Particle", {"index": j})
             if i > 0 and p.get("class") == "soft-core":
                 ET.SubElement(set1, "Particle", {"index": j})
+                ET.SubElement(set2, "Particle", {"index": j})
 
-    for p in environment.iterfind("./Particles/Particle"):
-        j = p.get("idx")
-        ET.SubElement(set2, "Particle", {"index": j})
+    if environment is not None:
+        for p in environment.iterfind("./Particles/Particle"):
+            j = p.get("idx")
+            ET.SubElement(set2, "Particle", {"index": j})
+
+    ## add exclusions
+    ## Although some of the following exclusions seem not necessary given we are only using
+    ## the CustomNonbondedForce to compute the nonbonded interactions between soft-core particles
+    ## and the environment, we include them because OpenMM requires that all forces have the same
+    ## set of exclusions, i.e., the list of exceptions in the NonbondedForce should be the same as
+    ## the list of exclusions in the CustomNonbondedForce no matter the exception has a zero
+    ## chargeProd and sigma or not.
 
     exclusions = ET.SubElement(force, "Exclusions")
+    exclusion_set = set()
+
     lig_nfs = []
     for ligand in ligands:
         for f in ligand.iterfind("./Forces/Force"):
@@ -924,13 +1063,34 @@ def make_custom_nonbonded_force(
     for lig_nf, ligand in zip(lig_nfs, ligands):
         for e in lig_nf.iterfind("./Exceptions/Exception"):
             i1, i2 = int(e.get("p1")), int(e.get("p2"))
-            if (
-                ligand.find("./Particles")[i1].get("class") == "common"
-                and ligand.find("./Particles")[i2].get("class") == "common"
-            ):
-                continue
             j1, j2 = _get_idx(ligand, [i1, i2])
-            ET.SubElement(exclusions, "Exclusion", {"p1": str(j1), "p2": str(j2)})
+            j1, j2 = sorted([j1, j2])
+            if (j1, j2) not in exclusion_set:
+                ET.SubElement(exclusions, "Exclusion", {"p1": str(j1), "p2": str(j2)})
+                exclusion_set.add((j1, j2))
+
+    for liganda, ligandb in combinations(ligands, 2):
+        for p, q in product(
+            liganda.iterfind("./Particles/Particle"),
+            ligandb.iterfind("./Particles/Particle"),
+        ):
+            if p.get("class") == "soft-core" and q.get("class") == "soft-core":
+                j1, j2 = int(p.get("idx")), int(q.get("idx"))
+                j1, j2 = sorted([j1, j2])
+                if (j1, j2) not in exclusion_set:
+                    ET.SubElement(
+                        exclusions, "Exclusion", {"p1": str(j1), "p2": str(j2)}
+                    )
+                    exclusion_set.add((j1, j2))
+
+    if env_nf is not None:
+        for e in env_nf.iterfind("./Exceptions/Exception"):
+            i1, i2 = int(e.get("p1")), int(e.get("p2"))
+            j1, j2 = _get_idx(environment, [i1, i2])
+            j1, j2 = sorted([j1, j2])
+            if (j1, j2) not in exclusion_set:
+                ET.SubElement(exclusions, "Exclusion", {"p1": str(j1), "p2": str(j2)})
+                exclusion_set.add((j1, j2))
 
     return force
 
