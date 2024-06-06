@@ -6,5 +6,3 @@ for name in BNZ IPH; do
     parmchk2 -i ./output/$name.mol2 -f mol2 -o ./output/$name.frcmod
 done
 tleap -f ./script/make_prmtop.leaprc
-
-

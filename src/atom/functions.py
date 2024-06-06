@@ -148,6 +148,14 @@ def make_graph(topology: openmm.app.Topology) -> nx.Graph:
 
         g.add_edge(atom1.index, atom2.index, type=bond.type)
 
+        ## use label for finer control of mapping
+        if hasattr(atom1, 'label'):
+            g.add_node(atom1.index, label=atom1.label)
+        if hasattr(atom2, 'label'):
+            g.add_node(atom2.index, label=atom2.label)
+
+    nx.set_node_attributes(g, dict(g.degree), "degree")
+
     return g
 
 
@@ -177,7 +185,9 @@ def compute_mcs_ISMAGS(top1: openmm.app.Topology, top2: openmm.app.Topology) -> 
 
     graph_large = make_graph(top_large)
     graph_small = make_graph(top_small)
-    nm = nx.algorithms.isomorphism.categorical_node_match("element", "")
+    nm = nx.algorithms.isomorphism.categorical_node_match(
+        ["element", "degree"], ["", ""]
+    )
     em = nx.algorithms.isomorphism.categorical_edge_match("type", "")
 
     isomag = nx.algorithms.isomorphism.ISMAGS(
@@ -206,19 +216,55 @@ def compute_mcs_ISMAGS(top1: openmm.app.Topology, top2: openmm.app.Topology) -> 
 
 
 def compute_mapping(ga, gb, source):
-    bfs_successors = list(nx.bfs_successors(gb, source))
+    """Compute the subgraph isomorphism between ga and gb starting from source node in gb.
+
+    ga is assumed to be the bigger graph and gb is the smaller graph.
+    """
+    gb_copy = copy.deepcopy(gb)
+
+    ## start with the whole graph of gb, we will remove nodes from gb one node at a time
+    ## until that the remaining subgraph of gb is isomorphic to a subgraph of ga
+    bfs_successors = list(nx.bfs_successors(gb_copy, source))
     nodes = list(chain(*[v for _, v in bfs_successors]))
     nodes.insert(0, source)
 
-    nm = nx.algorithms.isomorphism.categorical_node_match("element", "")
+    nm = nx.algorithms.isomorphism.categorical_node_match(
+        ["element", "degree", "label"], ["", "", ""]
+    )
     em = nx.algorithms.isomorphism.categorical_edge_match("type", "")
     for n in nodes:
-        gb.remove_node(n)
+        gb_copy.remove_node(n)
         gm = nx.algorithms.isomorphism.GraphMatcher(
-            ga, gb, node_match=nm, edge_match=em
+            ga, gb_copy, node_match=nm, edge_match=em
         )
         if gm.subgraph_is_isomorphic():
-            return gm.mapping
+            core = gm.mapping
+            break
+
+    if len(core) == 0:
+        return {}
+
+    ## starting from the subgraph of gb discovered above, we will grow the subgraph
+    ## by adding one node at a time and check if the subgraph is isomorphic to a subgraph of ga
+
+    source = list(core.keys())[0]
+    subnodes = [source]
+    bfs_successors = list(nx.bfs_successors(gb, source))
+    nodes = list(chain(*[v for _, v in bfs_successors]))
+    for n in nodes:
+        gm = nx.algorithms.isomorphism.GraphMatcher(
+            ga, nx.subgraph(gb, subnodes + [n]), node_match=nm, edge_match=em
+        )
+        if gm.subgraph_is_isomorphic():
+            subnodes.append(n)
+
+    gm = nx.algorithms.isomorphism.GraphMatcher(
+        ga, nx.subgraph(gb, subnodes), node_match=nm, edge_match=em
+    )
+
+    gm.subgraph_is_isomorphic()
+
+    return gm.mapping
 
 
 def compute_mcs_VF2(
@@ -291,22 +337,74 @@ def label_particles(
     Note that the function modifies the input ligand and does not return anything.
 
     """
+    ## common particle set
+    cps = set(common_particles)
 
     ## label particles' class as common or soft-core
     for i, p in enumerate(ligand.iterfind("./Particles/Particle")):
-        if i in common_particles:
+        if i in cps:
             p.set("class", "common")
         else:
             p.set("class", "soft-core")
 
     ## label soft-core particles' attach_idx using breadth-first search
     for i, j in nx.bfs_edges(graph, source=common_particles[0]):
-        if (i in common_particles) and (j not in common_particles):
+        if (i in cps) and (j not in cps):
             ligand.find("./Particles")[j].set("attach_idx", str(i))
-        elif (i not in common_particles) and (j not in common_particles):
+        elif (i not in cps) and (j not in cps):
             ligand.find("./Particles")[j].set(
                 "attach_idx", ligand.find("./Particles")[i].get("attach_idx")
             )
+
+    ## compute shortest path lengths from each soft-core particle to common particles
+
+    ## soft-core particle set
+    scps = set([i for i in range(graph.number_of_nodes()) if i not in cps])
+    dist_from_cp_to_scp = defaultdict(list)
+
+    for i in range(graph.number_of_nodes()):
+        if i in cps:
+            continue
+        lengths = nx.single_target_shortest_path_length(graph, i)
+        ## currently nx.single_target_shortest_path_length returns an iterator
+        ## starting from v3.5, it will return a dictionary
+        for s, v in lengths:
+            if s in cps:
+                dist_from_cp_to_scp[s].append(v)
+
+    for k, v in dist_from_cp_to_scp.items():
+        dist_from_cp_to_scp[k] = min(v)
+
+    start_node = max(dist_from_cp_to_scp, key=dist_from_cp_to_scp.get)
+    predecessors = nx.dfs_predecessors(graph, start_node)
+
+    bonded_terms = ET.Element("BondedTerms")
+
+    record_print = {}
+
+    for i in scps:
+        j = predecessors[i]
+        if j in cps:
+            ET.SubElement(bonded_terms, "Bond", {"p1": str(i), "p2": str(j)})
+            
+
+        k = predecessors[j]
+        if j in cps or k in cps:
+            ET.SubElement(
+                bonded_terms, "Angle", {"p1": str(i), "p2": str(j), "p3": str(k)}
+            )
+
+        h = predecessors[k]
+        if j in cps or k in cps or h in cps:
+            ET.SubElement(
+                bonded_terms,
+                "Torsion",
+                {"p1": str(i), "p2": str(j), "p3": str(k), "p4": str(h)},
+            )
+
+        record_print[i] = [j, k, h]
+    ligand.append(bonded_terms)
+    print(record_print)
 
 
 def merge_particles_and_topologies(
@@ -435,7 +533,7 @@ def merge_particles_and_topologies(
 
     if ligand_topologies[0].getPeriodicBoxVectors() is not None:
         topology.setPeriodicBoxVectors(ligand_topologies[0].getPeriodicBoxVectors())
-        
+
     return particles, topology
 
 
@@ -517,13 +615,22 @@ def merge_harmonic_bonds(
                 ligand_bonds.append(f)
     assert len(ligand_bonds) == len(ligands)
 
+    bonds_not_scale = [set() for _ in ligands]
+    for ligand, bond in zip(ligands, bonds_not_scale):
+        for b in ligand.iterfind("./BondedTerms/Bond"):
+            i1, i2 = int(b.get("p1")), int(b.get("p2"))
+            bond.add((i1, i2))
+            bond.add((i2, i1))
+
     env_bonds = None
     if environment is not None:
         for f in environment.iterfind("./Forces/Force"):
             if f.get("type") == "HarmonicBondForce":
                 env_bonds = f
 
-    for (_, lambda_vdw), ligand_bond, ligand in zip(lambdas, ligand_bonds, ligands):
+    for (_, lambda_vdw), ligand_bond, ligand, bond_no_scale in zip(
+        lambdas, ligand_bonds, ligands, bonds_not_scale
+    ):
         for b in ligand_bond.iterfind("./Bonds/Bond"):
             i1, i2 = int(b.get("p1")), int(b.get("p2"))
             j1, j2 = _get_idx(ligand, [i1, i2])
@@ -543,12 +650,40 @@ def merge_harmonic_bonds(
                         "p2": j2,
                     },
                 )
-            else:
+
+            elif (
+                ligand.find("./Particles")[i1].get("class") == "soft-core"
+                and ligand.find("./Particles")[i2].get("class") == "soft-core"
+            ):
                 ET.SubElement(
                     bonds,
                     "Bond",
                     {"d": b.get("d"), "k": str(float(b.get("k"))), "p1": j1, "p2": j2},
                 )
+
+            else:
+                if (i1, i2) in bond_no_scale:
+                    ET.SubElement(
+                        bonds,
+                        "Bond",
+                        {
+                            "d": b.get("d"),
+                            "k": str(float(b.get("k"))),
+                            "p1": j1,
+                            "p2": j2,
+                        },
+                    )
+                else:
+                    ET.SubElement(
+                        bonds,
+                        "Bond",
+                        {
+                            "d": b.get("d"),
+                            "k": str(float(b.get("k"))),
+                            "p1": j1,
+                            "p2": j2,
+                        },
+                    )
 
     if env_bonds is not None:
         for b in env_bonds.iterfind("./Bonds/Bond"):
@@ -586,13 +721,22 @@ def merge_harmonic_angles(
                 ligand_angles.append(f)
     assert len(ligand_angles) == len(ligands)
 
+    angles_not_scale = [set() for _ in ligands]
+    for ligand, angle in zip(ligands, angles_not_scale):
+        for a in ligand.iterfind("./BondedTerms/Angle"):
+            i1, i2, i3 = int(a.get("p1")), int(a.get("p2")), int(a.get("p3"))
+            angle.add((i1, i2, i3))
+            angle.add((i3, i2, i1))
+
     env_angles = None
     if environment is not None:
         for f in environment.iterfind("./Forces/Force"):
             if f.get("type") == "HarmonicAngleForce":
                 env_angles = f
 
-    for (_, lambda_vdw), ligand_angle, ligand in zip(lambdas, ligand_angles, ligands):
+    for (_, lambda_vdw), ligand_angle, ligand, angle_not_scale in zip(
+        lambdas, ligand_angles, ligands, angles_not_scale
+    ):
         for a in ligand_angle.iterfind("./Angles/Angle"):
             i1, i2, i3 = int(a.get("p1")), int(a.get("p2")), int(a.get("p3"))
             j1, j2, j3 = _get_idx(ligand, [i1, i2, i3])
@@ -613,7 +757,11 @@ def merge_harmonic_angles(
                         "p3": str(j3),
                     },
                 )
-            else:
+            elif (
+                ligand.find("./Particles")[i1].get("class") == "soft-core"
+                and ligand.find("./Particles")[i2].get("class") == "soft-core"
+                and ligand.find("./Particles")[i3].get("class") == "soft-core"
+            ):
                 ET.SubElement(
                     angles,
                     "Angle",
@@ -625,6 +773,31 @@ def merge_harmonic_angles(
                         "p3": str(j3),
                     },
                 )
+            else:
+                if (i1, i2, i3) in angle_not_scale:
+                    ET.SubElement(
+                        angles,
+                        "Angle",
+                        {
+                            "a": str(float(a.get("a"))),
+                            "k": str(float(a.get("k"))),
+                            "p1": str(j1),
+                            "p2": str(j2),
+                            "p3": str(j3),
+                        },
+                    )
+                else:
+                    ET.SubElement(
+                        angles,
+                        "Angle",
+                        {
+                            "a": str(float(a.get("a"))),
+                            "k": str(float(a.get("k"))),
+                            "p1": str(j1),
+                            "p2": str(j2),
+                            "p3": str(j3),
+                        },
+                    )
 
     if env_angles is not None:
         for a in env_angles.iterfind("./Angles/Angle"):
@@ -670,14 +843,26 @@ def merge_periodic_torsions(
                 ligand_torsions.append(f)
     assert len(ligand_torsions) == len(ligands)
 
+    torsions_not_scale = [set() for _ in ligands]
+    for ligand, torsion in zip(ligands, torsions_not_scale):
+        for t in ligand.iterfind("./BondedTerms/Torsion"):
+            i1, i2, i3, i4 = (
+                int(t.get("p1")),
+                int(t.get("p2")),
+                int(t.get("p3")),
+                int(t.get("p4")),
+            )
+            torsion.add((i1, i2, i3, i4))
+            torsion.add((i4, i3, i2, i1))
+
     env_torsion = None
     if environment is not None:
         for f in environment.iterfind("./Forces/Force"):
             if f.get("type") == "PeriodicTorsionForce":
                 env_torsion = f
 
-    for (_, lambda_vdw), ligand_torsion, ligand in zip(
-        lambdas, ligand_torsions, ligands
+    for (_, lambda_vdw), ligand_torsion, ligand, torsion_not_scale in zip(
+        lambdas, ligand_torsions, ligands, torsions_not_scale
     ):
         for t in ligand_torsion.iterfind("./Torsions/Torsion"):
             i1, i2, i3, i4 = map(
@@ -704,7 +889,12 @@ def merge_periodic_torsions(
                         "phase": t.get("phase"),
                     },
                 )
-            else:
+            elif (
+                ligand.find("./Particles")[i1].get("class") == "soft-core"
+                and ligand.find("./Particles")[i2].get("class") == "soft-core"
+                and ligand.find("./Particles")[i3].get("class") == "soft-core"
+                and ligand.find("./Particles")[i4].get("class") == "soft-core"
+            ):
                 ET.SubElement(
                     torsions,
                     "Torsion",
@@ -717,7 +907,36 @@ def merge_periodic_torsions(
                         "periodicity": t.get("periodicity"),
                         "phase": t.get("phase"),
                     },
-                )
+                )                    
+            else:
+                if (i1, i2, i3, i4) in torsion_not_scale:
+                    ET.SubElement(
+                        torsions,
+                        "Torsion",
+                        {
+                            "k": str(float(t.get("k"))),
+                            "p1": str(j1),
+                            "p2": str(j2),
+                            "p3": str(j3),
+                            "p4": str(j4),
+                            "periodicity": t.get("periodicity"),
+                            "phase": t.get("phase"),
+                        },
+                    )
+                else:
+                    ET.SubElement(
+                        torsions,
+                        "Torsion",
+                        {
+                            "k": str(float(t.get("k"))),
+                            "p1": str(j1),
+                            "p2": str(j2),
+                            "p3": str(j3),
+                            "p4": str(j4),
+                            "periodicity": t.get("periodicity"),
+                            "phase": t.get("phase"),
+                        },
+                    )
 
     if env_torsion is not None:
         for t in env_torsion.iterfind("./Torsions/Torsion"):
