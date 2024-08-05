@@ -232,7 +232,7 @@ def compute_mapping(ga, gb, source):
         ["element", "degree", "label"], ["", "", ""]
     )
     em = nx.algorithms.isomorphism.categorical_edge_match("type", "")
-    
+
     core = {}
     for n in nodes:
         gb_copy.remove_node(n)
