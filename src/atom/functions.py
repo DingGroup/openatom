@@ -305,6 +305,7 @@ def compute_mcs_VF2(
     
     M = max([len(m) for m in mappings])
     assert M != 0, "No Mappings found between the two molecules"
+    
     mappings = [m for m in mappings if len(m) == M]
     mapping = min(mappings, key=lambda x: sum([abs(k - v) for k, v in x.items()]))
 
