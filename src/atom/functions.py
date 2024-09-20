@@ -1,3 +1,5 @@
+from typing import List, Tuple
+from numpy import ndarray
 import networkx as nx
 import openmm
 import openmm.app
@@ -9,18 +11,20 @@ from collections import defaultdict
 import multiprocessing as mp
 from itertools import chain, combinations, product
 import re
+import os
+import time
 
 
 def make_alchemical_system(
-    ligs: list[ET.Element],
-    lig_tops: list[openmm.app.Topology],
-    lig_common_particles: list[list[int]],
-    lig_coors: list[np.ndarray],
-    lambdas: list[(float, float)],
+    ligs: List[ET.Element],
+    lig_tops: List[openmm.app.Topology],
+    lig_common_particles: List[List[int]],
+    lig_coors: List[ndarray],
+    lambdas: List[Tuple[float, float]],
     environment: ET.Element,
     environment_top: openmm.app.Topology,
-    environment_coor: np.ndarray,
-) -> tuple[ET.Element, np.ndarray]:
+    environment_coor: ndarray,
+) -> Tuple[ET.Element, ndarray]:
     """Make an alchemical system from ligands and environment."""
 
     lig_graphs = [make_graph(lig_top) for lig_top in lig_tops]
@@ -34,32 +38,32 @@ def make_alchemical_system(
         system = ET.Element("System", ligs[0].attrib)
         system.append(ligs[0].find("./PeriodicBoxVectors"))
 
-    particles, topology = merge_particles_and_topologies(
+    particles, topology = _merge_particles_and_topologies(
         ligs, lig_tops, lig_common_particles, environment, environment_top
     )
     system.append(particles)
 
-    constraints = merge_constraints(ligs, environment)
+    constraints = _merge_constraints(ligs, environment)
     system.append(constraints)
 
     forces = ET.SubElement(system, "Forces")
 
-    force = merge_harmonic_bonds(ligs, lambdas, environment)
+    force = _merge_harmonic_bonds(ligs, lambdas, environment)
     forces.append(force)
 
-    force = merge_harmonic_angles(ligs, lambdas, environment)
+    force = _merge_harmonic_angles(ligs, lambdas, environment)
     forces.append(force)
 
-    force = merge_periodic_torsions(ligs, lambdas, environment)
+    force = _merge_periodic_torsions(ligs, lambdas, environment)
     forces.append(force)
 
-    force = merge_nonbonded_forces(ligs, lambdas, environment)
+    force = _merge_nonbonded_forces(ligs, lambdas, environment)
     forces.append(force)
 
-    force = make_custom_nonbonded_force(ligs, lambdas, environment)
+    force = _make_custom_nonbonded_force(ligs, lambdas, environment)
     forces.append(force)
 
-    force = make_cmmotion_remover()
+    force = _make_cmmotion_remover()
     forces.append(force)
 
     for i in range(1, len(lig_coors)):
@@ -404,10 +408,9 @@ def label_particles(
 
         record_print[i] = [j, k, h]
     ligand.append(bonded_terms)
-    print(record_print)
 
 
-def merge_particles_and_topologies(
+def _merge_particles_and_topologies(
     ligands: list[ET.Element],
     ligand_topologies: list[openmm.app.Topology],
     common_particles: list[list[int]],
@@ -489,7 +492,7 @@ def merge_particles_and_topologies(
                 else:
                     name = atom.name
                     while name in atom_names:
-                        name = increment_atom_name(name)
+                        name = _increment_atom_name(name)
                     topology.addAtom(name, atom.element, residue)
                     atom_names.add(name)
 
@@ -537,7 +540,7 @@ def merge_particles_and_topologies(
     return particles, topology
 
 
-def merge_constraints(ligands: list[ET.Element], environment: ET.Element) -> ET.Element:
+def _merge_constraints(ligands: list[ET.Element], environment: ET.Element) -> ET.Element:
     """Merge the constraints of ligands and environment.
 
     The constraints of the ligands among common particles are added once to the merged constraints
@@ -589,11 +592,11 @@ def merge_constraints(ligands: list[ET.Element], environment: ET.Element) -> ET.
     return cons
 
 
-def _get_idx(root: ET.Element, idxs: list[int]) -> list[int]:
+def _get_idx(root: ET.Element, idxs: List[int]) -> List[int]:
     return [int(root.find("./Particles")[i].get("idx")) for i in idxs]
 
 
-def merge_harmonic_bonds(
+def _merge_harmonic_bonds(
     ligands: list[ET.Element], lambdas: list[(float, float)], environment: ET.Element
 ) -> ET.Element:
     force = ET.Element(
@@ -697,7 +700,7 @@ def merge_harmonic_bonds(
     return force
 
 
-def merge_harmonic_angles(
+def _merge_harmonic_angles(
     ligands: list[ET.Element],
     lambdas: list[(float, float)],
     environment: ET.Element,
@@ -819,7 +822,7 @@ def merge_harmonic_angles(
     return force
 
 
-def merge_periodic_torsions(
+def _merge_periodic_torsions(
     ligands: list[ET.Element],
     lambdas: list[(float, float)],
     environment: ET.Element,
@@ -962,7 +965,7 @@ def merge_periodic_torsions(
     return force
 
 
-def merge_nonbonded_forces(
+def _merge_nonbonded_forces(
     ligands: list[ET.Element],
     lambdas: list,
     environment: ET.Element,
@@ -1133,7 +1136,7 @@ def merge_nonbonded_forces(
     return force
 
 
-def make_custom_nonbonded_force(
+def _make_custom_nonbonded_force(
     ligands: list[ET.Element],
     lambdas: list,
     environment: ET.Element,
@@ -1314,7 +1317,7 @@ def make_custom_nonbonded_force(
     return force
 
 
-def make_cmmotion_remover():
+def _make_cmmotion_remover():
     force = ET.Element(
         "Force",
         {
@@ -1328,7 +1331,7 @@ def make_cmmotion_remover():
     return force
 
 
-def increment_atom_name(atom_name):
+def _increment_atom_name(atom_name):
     # Use regular expressions to find all non-digit and digit parts of the string
     match = re.match(r"([a-zA-Z]+)(\d+)", atom_name)
     if match:
@@ -1342,3 +1345,48 @@ def increment_atom_name(atom_name):
     else:
         # Return original if no digits found
         return atom_name
+
+
+def make_psf_from_topology(topology, psf_file_name):
+    file_handle = open(psf_file_name, 'w')
+
+    ## start line
+    print("PSF CMAP CHEQ XPLOR", file = file_handle)
+    print("", file = file_handle)
+
+    ## title
+    print("{:>8d} !NTITLE".format(2), file = file_handle)
+    print("* Coarse Grained System PSF FILE", file = file_handle)
+    user = os.environ['USER']
+    print(f"* DATE: {time.asctime()} CREATED BY USER: {user}", file = file_handle)
+
+    ## atoms
+    num_atoms = topology.getNumAtoms()
+    print("", file = file_handle)
+    print("{:>8d} !NATOM".format(num_atoms), file = file_handle)
+    for atom in topology.atoms():
+        name = atom.name
+        atom_index = atom.index + 1
+        resname = atom.residue.name
+        res_index = atom.residue.index + 1
+
+        segment = atom.residue.chain.id
+        print("{:>8d} {:<4s} {:<4d} {:<4s} {:<4s} {:<4s} {:<14.6}{:<14.6}{:>8d}{:14.6}".format(atom_index, segment, res_index, resname, name, name, 0.0, 0.0, 0, 0.0), file = file_handle)
+
+    ## bonds
+    num_bonds = topology.getNumBonds()
+    print("", file = file_handle)
+    print("{:>8d} !NBOND: bonds".format(num_bonds), file = file_handle)
+
+    count = 0
+    for bond in topology.bonds():
+        atom1 = bond[0].index + 1
+        atom2 = bond[1].index + 1
+        print("{:>8d}{:>8d}".format(atom1, atom2), file = file_handle, end = '')
+        count += 1
+        if count == 4:
+            print("", file = file_handle)
+            count = 0
+    print("", file = file_handle)
+    
+    file_handle.close()
