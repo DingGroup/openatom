@@ -4,7 +4,7 @@ import openmm.app as app
 import openmm.unit as unit
 import numpy as np
 import xml.etree.ElementTree as ET
-from atom.functions import (
+from openatom.functions import (
     make_graph,
     make_alchemical_system,
     align_coordinates,

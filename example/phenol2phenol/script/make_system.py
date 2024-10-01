@@ -7,7 +7,7 @@ import xml.etree.ElementTree as ET
 import os
 import pickle
 import time
-from atom.functions import (
+from openatom.functions import (
     align_coordinates,
     make_graph,
     make_alchemical_system,
