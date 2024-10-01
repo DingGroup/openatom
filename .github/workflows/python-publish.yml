@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/p/atom
+      url: https://pypi.org/p/openatom
     permissions:
       id-token: write  # IMPORTANT: mandatory for trusted publishing
 
