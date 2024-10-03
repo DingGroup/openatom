@@ -8,7 +8,7 @@ import os
 from sys import exit
 import pickle
 import time
-from openatom.functions import (
+from openatom.merge_systems import (
     align_coordinates,
     make_graph,
     make_alchemical_system,

@@ -1,6 +1,6 @@
 import openmm.app as app
 import pickle
-from openatom.functions import (
+from openatom.merge_systems import (
     compute_mcs_VF2,
 )
 

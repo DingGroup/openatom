@@ -1,4 +1,5 @@
 from typing import List, Tuple
+from collections.abc import Iterator
 from numpy import ndarray
 import networkx as nx
 import openmm
@@ -8,11 +9,9 @@ import copy
 import numpy as np
 from scipy.spatial.transform import Rotation
 from collections import defaultdict
-import multiprocessing as mp
-from itertools import chain, combinations, product
+from itertools import combinations, product
 import re
-import os
-import time
+from openatom.mcs import make_graph
 
 
 def make_alchemical_system(
@@ -121,216 +120,13 @@ def align_coordinates(
     return x2
 
 
-def make_graph(topology: openmm.app.Topology) -> nx.Graph:
-    """Convert an OpenMM topology to a NetworkX graph.
-
-    The nodes of the graph are atoms and the edges are bonds. Each node has an attribute "element"
-    which is the element symbol of the atom. If the atom is a hydrogen, the element attribute is
-    the concatenation of the element symbols of the atom that the hydrogen is bonded to and the hydrogen. Each edge has an attribute "type" which is the bond type.
-
-    Args:
-        topology (openmm.app.Topology): OpenMM topology object.
-
-    Returns:
-        nx.Graph: NetworkX graph of the topology.
-
-    """
-    g = nx.Graph()
-    for bond in topology.bonds():
-        atom1, atom2 = bond.atom1, bond.atom2
-        symbol1, symbol2 = atom1.element.symbol, atom2.element.symbol
-
-        if symbol1 == "H":
-            g.add_node(atom1.index, element=symbol2 + symbol1)
-        else:
-            g.add_node(atom1.index, element=symbol1)
-
-        if symbol2 == "H":
-            g.add_node(atom2.index, element=symbol1 + symbol2)
-        else:
-            g.add_node(atom2.index, element=symbol2)
-
-        g.add_edge(atom1.index, atom2.index, type=bond.type)
-
-        ## use label for finer control of mapping
-        if hasattr(atom1, 'label'):
-            g.add_node(atom1.index, label=atom1.label)
-        if hasattr(atom2, 'label'):
-            g.add_node(atom2.index, label=atom2.label)
-
-    nx.set_node_attributes(g, dict(g.degree), "degree")
-
-    return g
-
-
-def compute_mcs_ISMAGS(top1: openmm.app.Topology, top2: openmm.app.Topology) -> dict:
-    """Compute the maximum common substructure between two topologies.
-
-    Each topology is converted to a NetworkX graph using the make_graph function and
-    the maximum common substructure is computed using the ISMAGS algorithm implemented in NetworkX
-    based on the NetworkX graphs of the topologies.
-
-    Args:
-        top1 (openmm.app.Topology): OpenMM topology object of the first molecule.
-        top2 (openmm.app.Topology): OpenMM topology object of the second molecule.
-
-    Returns:
-        dict: A dictionary where the keys are the atom indices of the first molecule and
-        the values are the atom indices of the second molecule that are in the common
-        substructure.
-    """
-
-    if top1.getNumAtoms() >= top2.getNumAtoms():
-        top_large, top_small = top1, top2
-        key = "first"
-    else:
-        top_large, top_small = top2, top1
-        key = "second"
-
-    graph_large = make_graph(top_large)
-    graph_small = make_graph(top_small)
-    nm = nx.algorithms.isomorphism.categorical_node_match(
-        ["element", "degree"], ["", ""]
-    )
-    em = nx.algorithms.isomorphism.categorical_edge_match("type", "")
-
-    isomag = nx.algorithms.isomorphism.ISMAGS(
-        graph_large, graph_small, node_match=nm, edge_match=em
-    )
-    lcss = list(isomag.largest_common_subgraph())
-
-    if len(lcss) > 1:
-        Warning(
-            "More than one largest common substructures found. Returning the first one."
-        )
-
-    lcs = lcss[0]
-    subgraph_large = graph_large.subgraph(list(lcs.keys()))
-
-    components = list(nx.connected_components(subgraph_large))
-    len_components = [len(c) for c in components]
-    largest_component = components[np.argmax(len_components)]
-
-    connected_lcs = {i: lcs[i] for i in largest_component}
-
-    if key == "first":
-        return connected_lcs
-    else:
-        return {v: k for k, v in connected_lcs.items()}
-
-
-def compute_mapping(ga, gb, source):
-    """Compute the subgraph isomorphism between ga and gb starting from source node in gb.
-
-    ga is assumed to be the bigger graph and gb is the smaller graph.
-    """
-    gb_copy = copy.deepcopy(gb)
-
-    ## start with the whole graph of gb, we will remove nodes from gb one node at a time
-    ## until that the remaining subgraph of gb is isomorphic to a subgraph of ga
-    bfs_successors = list(nx.bfs_successors(gb_copy, source))
-    nodes = list(chain(*[v for _, v in bfs_successors]))
-    nodes.insert(0, source)
-
-    nm = nx.algorithms.isomorphism.categorical_node_match(
-        ["element", "degree", "label"], ["", "", ""]
-    )
-    em = nx.algorithms.isomorphism.categorical_edge_match("type", "")
-
-    core = {}
-    for n in nodes:
-        gb_copy.remove_node(n)
-        gm = nx.algorithms.isomorphism.GraphMatcher(
-            ga, gb_copy, node_match=nm, edge_match=em
-        )
-        if gm.subgraph_is_isomorphic():
-            core = gm.mapping
-            break
-
-    if len(core) == 0:
-        return {}
-
-    ## starting from the subgraph of gb discovered above, we will grow the subgraph
-    ## by adding one node at a time and check if the subgraph is isomorphic to a subgraph of ga
-
-    source = list(core.values())[0]
-    subnodes = [source]
-    bfs_successors = list(nx.bfs_successors(gb, source))
-    nodes = list(chain(*[v for _, v in bfs_successors]))
-    for n in nodes:
-        gm = nx.algorithms.isomorphism.GraphMatcher(
-            ga, nx.subgraph(gb, subnodes + [n]), node_match=nm, edge_match=em
-        )
-        if gm.subgraph_is_isomorphic():
-            subnodes.append(n)
-
-    gm = nx.algorithms.isomorphism.GraphMatcher(
-        ga, nx.subgraph(gb, subnodes), node_match=nm, edge_match=em
-    )
-
-    gm.subgraph_is_isomorphic()
-
-    return gm.mapping
-
-
-def compute_mcs_VF2(
-    top1: openmm.app.Topology, top2: openmm.app.Topology, timeout=10
-) -> dict:
-    if top1.getNumAtoms() >= top2.getNumAtoms():
-        top_large, top_small = top1, top2
-        key = "first"
-    else:
-        top_large, top_small = top2, top1
-        key = "second"
-
-    gl = make_graph(top_large)
-    gs = make_graph(top_small)
-
-    nodes_with_one_bond = [n for n in gs.nodes if gs.degree(n) == 1]
-
-    if mp.cpu_count() > 16 and len(nodes_with_one_bond) > 16:
-        num_processes = 16
-    else:
-        num_processes = min(mp.cpu_count(), len(nodes_with_one_bond))
-
-    mappings = []
-    with mp.Pool(num_processes) as pool:
-        futures = [
-            pool.apply_async(compute_mapping, args=(gl, gs, n))
-            for n in nodes_with_one_bond
-        ]
-        pool.close()
-        for future in futures:
-            try:
-                mapping = future.get(timeout=timeout)
-                mappings.append(mapping)
-            except mp.TimeoutError:
-                None
-    
-    M = max([len(m) for m in mappings])
-    assert M != 0, "No Mappings found between the two molecules"
-    
-    mappings = [m for m in mappings if len(m) == M]
-    mapping = min(mappings, key=lambda x: sum([abs(k - v) for k, v in x.items()]))
-
-    subgraph_large = gl.subgraph(list(mapping.keys()))
-    components = list(nx.connected_components(subgraph_large))
-    len_components = [len(c) for c in components]
-    largest_component = components[np.argmax(len_components)]
-
-    connected_lcs = {i: mapping[i] for i in largest_component}
-
-    if key == "first":
-        return connected_lcs
-    else:
-        return {v: k for k, v in connected_lcs.items()}
-
-
 def label_particles(
     ligand: ET.Element, common_particles: list[int], graph: nx.Graph
 ) -> None:
-    """Label the particles in a ligand based on the common substructure and the graph of the ligand.
-
+    """ This function has two main purposes:
+    1. Label the particles in a ligand based on the common substructure and the graph of the ligand.
+    2. Find the bonded terms between common particles and soft-core particles that will be kept when the soft-core particles' nonbonded interactions are turned off.
+    
     Every particle has a "class" attribute which can be either "common" or "soft-core". The common
     particles are the particles that are in the common substructure. The soft-core particles are
     the particles that are not in the common substructure. For each soft-core particle, it has an
@@ -346,6 +142,9 @@ def label_particles(
     Note that the function modifies the input ligand and does not return anything.
 
     """
+
+    #### label particles in the ligand
+
     ## common particle set
     cps = set(common_particles)
 
@@ -365,19 +164,32 @@ def label_particles(
                 "attach_idx", ligand.find("./Particles")[i].get("attach_idx")
             )
 
-    ## compute shortest path lengths from each soft-core particle to common particles
-
+    #### add bonded terms to the ligand
+    #### In alchemical free energy calculations, we need to be careful about the bonded terms
+    #### between common particles and soft-core particles.
+    #### When the soft-core particles' nonbonded interactions are turned off, the bonded terms
+    #### between common particles and soft-core particles are needed for the following reasons:
+    #### 1. they can keep the soft-core particles from drifting away from the common particles
+    #### 2. they can maintain the geometry of the soft-core particles to increase the phase space overlap
+    #### However, we don't want these bonded terms to distort the common particles' geometry.    
+    
     ## soft-core particle set
     scps = set([i for i in range(graph.number_of_nodes()) if i not in cps])
-    dist_from_cp_to_scp = defaultdict(list)
 
+    
+    ## compute shortest path lengths from each soft-core particle to common particles    
+    dist_from_cp_to_scp = defaultdict(list)    
     for i in range(graph.number_of_nodes()):
         if i in cps:
             continue
         lengths = nx.single_target_shortest_path_length(graph, i)
         ## currently nx.single_target_shortest_path_length returns an iterator
         ## starting from v3.5, it will return a dictionary
-        for s, v in lengths:
+        
+        if isinstance(lengths, Iterator):
+            lengths = dict(lengths)
+        
+        for s, v in lengths.items():
             if s in cps:
                 dist_from_cp_to_scp[s].append(v)
 
@@ -389,13 +201,10 @@ def label_particles(
 
     bonded_terms = ET.Element("BondedTerms")
 
-    record_print = {}
-
     for i in scps:
         j = predecessors[i]
         if j in cps:
             ET.SubElement(bonded_terms, "Bond", {"p1": str(i), "p2": str(j)})
-            
 
         k = predecessors[j]
         if j in cps or k in cps:
@@ -411,7 +220,6 @@ def label_particles(
                 {"p1": str(i), "p2": str(j), "p3": str(k), "p4": str(h)},
             )
 
-        record_print[i] = [j, k, h]
     ligand.append(bonded_terms)
 
 
@@ -545,7 +353,9 @@ def _merge_particles_and_topologies(
     return particles, topology
 
 
-def _merge_constraints(ligands: list[ET.Element], environment: ET.Element) -> ET.Element:
+def _merge_constraints(
+    ligands: list[ET.Element], environment: ET.Element
+) -> ET.Element:
     """Merge the constraints of ligands and environment.
 
     The constraints of the ligands among common particles are added once to the merged constraints
@@ -915,7 +725,7 @@ def _merge_periodic_torsions(
                         "periodicity": t.get("periodicity"),
                         "phase": t.get("phase"),
                     },
-                )                    
+                )
             else:
                 if (i1, i2, i3, i4) in torsion_not_scale:
                     ET.SubElement(
@@ -1350,48 +1160,3 @@ def _increment_atom_name(atom_name):
     else:
         # Return original if no digits found
         return atom_name
-
-
-def make_psf_from_topology(topology, psf_file_name):
-    file_handle = open(psf_file_name, 'w')
-
-    ## start line
-    print("PSF CMAP CHEQ XPLOR", file = file_handle)
-    print("", file = file_handle)
-
-    ## title
-    print("{:>8d} !NTITLE".format(2), file = file_handle)
-    print("* Coarse Grained System PSF FILE", file = file_handle)
-    user = os.environ['USER']
-    print(f"* DATE: {time.asctime()} CREATED BY USER: {user}", file = file_handle)
-
-    ## atoms
-    num_atoms = topology.getNumAtoms()
-    print("", file = file_handle)
-    print("{:>8d} !NATOM".format(num_atoms), file = file_handle)
-    for atom in topology.atoms():
-        name = atom.name
-        atom_index = atom.index + 1
-        resname = atom.residue.name
-        res_index = atom.residue.index + 1
-
-        segment = atom.residue.chain.id
-        print("{:>8d} {:<4s} {:<4d} {:<4s} {:<4s} {:<4s} {:<14.6}{:<14.6}{:>8d}{:14.6}".format(atom_index, segment, res_index, resname, name, name, 0.0, 0.0, 0, 0.0), file = file_handle)
-
-    ## bonds
-    num_bonds = topology.getNumBonds()
-    print("", file = file_handle)
-    print("{:>8d} !NBOND: bonds".format(num_bonds), file = file_handle)
-
-    count = 0
-    for bond in topology.bonds():
-        atom1 = bond[0].index + 1
-        atom2 = bond[1].index + 1
-        print("{:>8d}{:>8d}".format(atom1, atom2), file = file_handle, end = '')
-        count += 1
-        if count == 4:
-            print("", file = file_handle)
-            count = 0
-    print("", file = file_handle)
-    
-    file_handle.close()
