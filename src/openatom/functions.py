@@ -236,6 +236,8 @@ def compute_mapping(ga, gb, source):
         ["element", "degree", "label"], ["", "", ""]
     )
     em = nx.algorithms.isomorphism.categorical_edge_match("type", "")
+
+    core = {}
     for n in nodes:
         gb_copy.remove_node(n)
         gm = nx.algorithms.isomorphism.GraphMatcher(
@@ -251,7 +253,7 @@ def compute_mapping(ga, gb, source):
     ## starting from the subgraph of gb discovered above, we will grow the subgraph
     ## by adding one node at a time and check if the subgraph is isomorphic to a subgraph of ga
 
-    source = list(core.keys())[0]
+    source = list(core.values())[0]
     subnodes = [source]
     bfs_successors = list(nx.bfs_successors(gb, source))
     nodes = list(chain(*[v for _, v in bfs_successors]))
@@ -304,7 +306,10 @@ def compute_mcs_VF2(
                 mappings.append(mapping)
             except mp.TimeoutError:
                 None
+    
     M = max([len(m) for m in mappings])
+    assert M != 0, "No Mappings found between the two molecules"
+    
     mappings = [m for m in mappings if len(m) == M]
     mapping = min(mappings, key=lambda x: sum([abs(k - v) for k, v in x.items()]))
 
