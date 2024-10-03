@@ -6,7 +6,7 @@ import numpy as np
 import xml.etree.ElementTree as ET
 from sys import exit
 import pickle
-from atom.functions import (
+from openatom.functions import (
     align_coordinates,
     make_graph,
     make_alchemical_system,

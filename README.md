@@ -1,1 +1,1 @@
-# atom
+# OpenAtom - Open Alchemical Transformation of Molecules
