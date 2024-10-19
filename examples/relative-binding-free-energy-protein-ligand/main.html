@@ -339,24 +339,24 @@ document.write(`
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import numpy as np
-from itertools import product
-from atom.functions import make_alchemical_system, compute_mcs_VF2
-from dltoolbox import make_psf_from_topology
-import openmm as mm
-import openmm.unit as unit
-import openmm.app as app
-from openmm import XmlSerializer
-import xml.etree.ElementTree as ET
-import pandas as pd
-import pickle
-import mdtraj
-import argparse
-import os
-from sys import exit
-import time
-import tqdm
-from FastMBAR import FastMBAR
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">product</span>
+<span class="kn">from</span> <span class="nn">atom.functions</span> <span class="kn">import</span> <span class="n">make_alchemical_system</span><span class="p">,</span> <span class="n">compute_mcs_VF2</span>
+<span class="kn">from</span> <span class="nn">dltoolbox</span> <span class="kn">import</span> <span class="n">make_psf_from_topology</span>
+<span class="kn">import</span> <span class="nn">openmm</span> <span class="k">as</span> <span class="nn">mm</span>
+<span class="kn">import</span> <span class="nn">openmm.unit</span> <span class="k">as</span> <span class="nn">unit</span>
+<span class="kn">import</span> <span class="nn">openmm.app</span> <span class="k">as</span> <span class="nn">app</span>
+<span class="kn">from</span> <span class="nn">openmm</span> <span class="kn">import</span> <span class="n">XmlSerializer</span>
+<span class="kn">import</span> <span class="nn">xml.etree.ElementTree</span> <span class="k">as</span> <span class="nn">ET</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">import</span> <span class="nn">mdtraj</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">sys</span> <span class="kn">import</span> <span class="n">exit</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">tqdm</span>
+<span class="kn">from</span> <span class="nn">FastMBAR</span> <span class="kn">import</span> <span class="n">FastMBAR</span>
 </pre></div>
 </div>
 </div>
@@ -364,17 +364,17 @@ from FastMBAR import FastMBAR
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>liga_name, ligb_name = &quot;ejm_55&quot;, &quot;ejm_50&quot;
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">liga_name</span><span class="p">,</span> <span class="n">ligb_name</span> <span class="o">=</span> <span class="s2">&quot;ejm_55&quot;</span><span class="p">,</span> <span class="s2">&quot;ejm_50&quot;</span>
 
-liga_topology = app.AmberPrmtopFile(
-    f&quot;./structures/water_phase/{liga_name}.prmtop&quot;
-).topology
+<span class="n">liga_topology</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">AmberPrmtopFile</span><span class="p">(</span>
+    <span class="sa">f</span><span class="s2">&quot;./structures/water_phase/</span><span class="si">{</span><span class="n">liga_name</span><span class="si">}</span><span class="s2">.prmtop&quot;</span>
+<span class="p">)</span><span class="o">.</span><span class="n">topology</span>
 
-ligb_topology = app.AmberPrmtopFile(
-    f&quot;./structures/water_phase/{ligb_name}.prmtop&quot;
-).topology
+<span class="n">ligb_topology</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">AmberPrmtopFile</span><span class="p">(</span>
+    <span class="sa">f</span><span class="s2">&quot;./structures/water_phase/</span><span class="si">{</span><span class="n">ligb_name</span><span class="si">}</span><span class="s2">.prmtop&quot;</span>
+<span class="p">)</span><span class="o">.</span><span class="n">topology</span>
 
-mcs = compute_mcs_VF2(liga_topology, ligb_topology, timeout=5)
+<span class="n">mcs</span> <span class="o">=</span> <span class="n">compute_mcs_VF2</span><span class="p">(</span><span class="n">liga_topology</span><span class="p">,</span> <span class="n">ligb_topology</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -382,19 +382,19 @@ mcs = compute_mcs_VF2(liga_topology, ligb_topology, timeout=5)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>lambdas_list = [
-    [(1.0, 1.0), (0.0, 0.0)],
-    [(0.5, 1.0), (0.0, 0.0)],
-    [(0.0, 1.0), (0.0, 0.0)],
-    [(0.0, 0.9), (0.0, 0.1)],
-    [(0.0, 0.7), (0.0, 0.3)],
-    [(0.0, 0.5), (0.0, 0.5)],
-    [(0.0, 0.3), (0.0, 0.7)],
-    [(0.0, 0.1), (0.0, 0.9)],
-    [(0.0, 0.0), (0.0, 1.0)],
-    [(0.0, 0.0), (0.5, 1.0)],
-    [(0.0, 0.0), (1.0, 1.0)],
-]
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lambdas_list</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">[(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)],</span>
+    <span class="p">[(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)],</span>
+    <span class="p">[(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)],</span>
+    <span class="p">[(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)],</span>
+    <span class="p">[(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">)],</span>
+    <span class="p">[(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)],</span>
+    <span class="p">[(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">)],</span>
+    <span class="p">[(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">)],</span>
+    <span class="p">[(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)],</span>
+    <span class="p">[(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)],</span>
+    <span class="p">[(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)],</span>
+<span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -402,135 +402,135 @@ mcs = compute_mcs_VF2(liga_topology, ligb_topology, timeout=5)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>for phase in [&quot;water&quot;, &quot;protein&quot;]:
-    envi_prmtop = app.AmberPrmtopFile(
-        f&quot;./structures/{phase}_phase/env.prmtop&quot;
-    )
-    envi_coor = app.PDBFile(
-        f&quot;./structures/{phase}_phase/env.pdb&quot;
-    ).getPositions()
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">phase</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;water&quot;</span><span class="p">,</span> <span class="s2">&quot;protein&quot;</span><span class="p">]:</span>
+    <span class="n">envi_prmtop</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">AmberPrmtopFile</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;./structures/</span><span class="si">{</span><span class="n">phase</span><span class="si">}</span><span class="s2">_phase/env.prmtop&quot;</span>
+    <span class="p">)</span>
+    <span class="n">envi_coor</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">PDBFile</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;./structures/</span><span class="si">{</span><span class="n">phase</span><span class="si">}</span><span class="s2">_phase/env.pdb&quot;</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">getPositions</span><span class="p">()</span>
 
-    envi_system = envi_prmtop.createSystem(
-        nonbondedMethod=app.PME,
-        nonbondedCutoff=1.0 * unit.nanometer,
-        constraints=app.HBonds,
-        switchDistance=0.9 * unit.nanometer,
-    )
-    envi_top = envi_prmtop.topology
-    envi_coor = np.array(envi_coor.value_in_unit(unit.nanometer))
+    <span class="n">envi_system</span> <span class="o">=</span> <span class="n">envi_prmtop</span><span class="o">.</span><span class="n">createSystem</span><span class="p">(</span>
+        <span class="n">nonbondedMethod</span><span class="o">=</span><span class="n">app</span><span class="o">.</span><span class="n">PME</span><span class="p">,</span>
+        <span class="n">nonbondedCutoff</span><span class="o">=</span><span class="mf">1.0</span> <span class="o">*</span> <span class="n">unit</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span>
+        <span class="n">constraints</span><span class="o">=</span><span class="n">app</span><span class="o">.</span><span class="n">HBonds</span><span class="p">,</span>
+        <span class="n">switchDistance</span><span class="o">=</span><span class="mf">0.9</span> <span class="o">*</span> <span class="n">unit</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">envi_top</span> <span class="o">=</span> <span class="n">envi_prmtop</span><span class="o">.</span><span class="n">topology</span>
+    <span class="n">envi_coor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">envi_coor</span><span class="o">.</span><span class="n">value_in_unit</span><span class="p">(</span><span class="n">unit</span><span class="o">.</span><span class="n">nanometer</span><span class="p">))</span>
 
-    # load prmtop and xyz files
-    liga_prmtop = app.AmberPrmtopFile(
-        f&quot;./structures/{phase}_phase/{liga_name}.prmtop&quot;,
-        envi_top.getPeriodicBoxVectors(),
-    )
+    <span class="c1"># load prmtop and xyz files</span>
+    <span class="n">liga_prmtop</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">AmberPrmtopFile</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;./structures/</span><span class="si">{</span><span class="n">phase</span><span class="si">}</span><span class="s2">_phase/</span><span class="si">{</span><span class="n">liga_name</span><span class="si">}</span><span class="s2">.prmtop&quot;</span><span class="p">,</span>
+        <span class="n">envi_top</span><span class="o">.</span><span class="n">getPeriodicBoxVectors</span><span class="p">(),</span>
+    <span class="p">)</span>
 
-    liga_top = liga_prmtop.topology
-    liga_system = liga_prmtop.createSystem(
-        nonbondedMethod=app.PME,
-        nonbondedCutoff=1.0 * unit.nanometer,
-        constraints=app.HBonds,
-        switchDistance=0.9 * unit.nanometer,
-    )
+    <span class="n">liga_top</span> <span class="o">=</span> <span class="n">liga_prmtop</span><span class="o">.</span><span class="n">topology</span>
+    <span class="n">liga_system</span> <span class="o">=</span> <span class="n">liga_prmtop</span><span class="o">.</span><span class="n">createSystem</span><span class="p">(</span>
+        <span class="n">nonbondedMethod</span><span class="o">=</span><span class="n">app</span><span class="o">.</span><span class="n">PME</span><span class="p">,</span>
+        <span class="n">nonbondedCutoff</span><span class="o">=</span><span class="mf">1.0</span> <span class="o">*</span> <span class="n">unit</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span>
+        <span class="n">constraints</span><span class="o">=</span><span class="n">app</span><span class="o">.</span><span class="n">HBonds</span><span class="p">,</span>
+        <span class="n">switchDistance</span><span class="o">=</span><span class="mf">0.9</span> <span class="o">*</span> <span class="n">unit</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span>
+    <span class="p">)</span>
 
-    ligb_prmtop = app.AmberPrmtopFile(
-        f&quot;./structures/{phase}_phase/{ligb_name}.prmtop&quot;,
-        envi_top.getPeriodicBoxVectors(),
-    )
-
-
-    ligb_top = ligb_prmtop.topology
-    ligb_system = ligb_prmtop.createSystem(
-        nonbondedMethod=app.PME,
-        nonbondedCutoff=1.0 * unit.nanometer,
-        constraints=app.HBonds,
-        switchDistance=0.9 * unit.nanometer,
-    )
+    <span class="n">ligb_prmtop</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">AmberPrmtopFile</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;./structures/</span><span class="si">{</span><span class="n">phase</span><span class="si">}</span><span class="s2">_phase/</span><span class="si">{</span><span class="n">ligb_name</span><span class="si">}</span><span class="s2">.prmtop&quot;</span><span class="p">,</span>
+        <span class="n">envi_top</span><span class="o">.</span><span class="n">getPeriodicBoxVectors</span><span class="p">(),</span>
+    <span class="p">)</span>
 
 
-    liga_coor = mdtraj.load_xyz(
-        f&quot;./structures/{phase}_phase/{liga_name}_aligned.xyz&quot;,
-        top=mdtraj.Topology.from_openmm(liga_prmtop.topology),
-    ).xyz[0]
-    ligb_coor = mdtraj.load_xyz(
-        f&quot;./structures/{phase}_phase/{ligb_name}_aligned.xyz&quot;,
-        top=mdtraj.Topology.from_openmm(ligb_prmtop.topology),
-    ).xyz[0]
+    <span class="n">ligb_top</span> <span class="o">=</span> <span class="n">ligb_prmtop</span><span class="o">.</span><span class="n">topology</span>
+    <span class="n">ligb_system</span> <span class="o">=</span> <span class="n">ligb_prmtop</span><span class="o">.</span><span class="n">createSystem</span><span class="p">(</span>
+        <span class="n">nonbondedMethod</span><span class="o">=</span><span class="n">app</span><span class="o">.</span><span class="n">PME</span><span class="p">,</span>
+        <span class="n">nonbondedCutoff</span><span class="o">=</span><span class="mf">1.0</span> <span class="o">*</span> <span class="n">unit</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span>
+        <span class="n">constraints</span><span class="o">=</span><span class="n">app</span><span class="o">.</span><span class="n">HBonds</span><span class="p">,</span>
+        <span class="n">switchDistance</span><span class="o">=</span><span class="mf">0.9</span> <span class="o">*</span> <span class="n">unit</span><span class="o">.</span><span class="n">nanometer</span><span class="p">,</span>
+    <span class="p">)</span>
 
 
-    ligs_coor = [liga_coor, ligb_coor]
+    <span class="n">liga_coor</span> <span class="o">=</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">load_xyz</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;./structures/</span><span class="si">{</span><span class="n">phase</span><span class="si">}</span><span class="s2">_phase/</span><span class="si">{</span><span class="n">liga_name</span><span class="si">}</span><span class="s2">_aligned.xyz&quot;</span><span class="p">,</span>
+        <span class="n">top</span><span class="o">=</span><span class="n">mdtraj</span><span class="o">.</span><span class="n">Topology</span><span class="o">.</span><span class="n">from_openmm</span><span class="p">(</span><span class="n">liga_prmtop</span><span class="o">.</span><span class="n">topology</span><span class="p">),</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">ligb_coor</span> <span class="o">=</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">load_xyz</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;./structures/</span><span class="si">{</span><span class="n">phase</span><span class="si">}</span><span class="s2">_phase/</span><span class="si">{</span><span class="n">ligb_name</span><span class="si">}</span><span class="s2">_aligned.xyz&quot;</span><span class="p">,</span>
+        <span class="n">top</span><span class="o">=</span><span class="n">mdtraj</span><span class="o">.</span><span class="n">Topology</span><span class="o">.</span><span class="n">from_openmm</span><span class="p">(</span><span class="n">ligb_prmtop</span><span class="o">.</span><span class="n">topology</span><span class="p">),</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">xyz</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
-    envi_xml = XmlSerializer.serializeSystem(envi_system)
-    liga_xml = XmlSerializer.serializeSystem(liga_system)
-    ligb_xml = XmlSerializer.serializeSystem(ligb_system)
 
-    envi_et = ET.fromstring(envi_xml)
-    liga_et = ET.fromstring(liga_xml)
-    ligb_et = ET.fromstring(ligb_xml)
-    ligs_et = [liga_et, ligb_et]
+    <span class="n">ligs_coor</span> <span class="o">=</span> <span class="p">[</span><span class="n">liga_coor</span><span class="p">,</span> <span class="n">ligb_coor</span><span class="p">]</span>
 
-    liga_common_atoms = list(mcs.keys())
-    ligb_common_atoms = [mcs[i] for i in liga_common_atoms]
-    ligs_common_atoms = [liga_common_atoms, ligb_common_atoms]
+    <span class="n">envi_xml</span> <span class="o">=</span> <span class="n">XmlSerializer</span><span class="o">.</span><span class="n">serializeSystem</span><span class="p">(</span><span class="n">envi_system</span><span class="p">)</span>
+    <span class="n">liga_xml</span> <span class="o">=</span> <span class="n">XmlSerializer</span><span class="o">.</span><span class="n">serializeSystem</span><span class="p">(</span><span class="n">liga_system</span><span class="p">)</span>
+    <span class="n">ligb_xml</span> <span class="o">=</span> <span class="n">XmlSerializer</span><span class="o">.</span><span class="n">serializeSystem</span><span class="p">(</span><span class="n">ligb_system</span><span class="p">)</span>
 
-    os.makedirs(f&quot;./output/{phase}_phase&quot;, exist_ok=True)
-    with open(
-        f&quot;./output/{phase}_phase/lambdas.pkl&quot;, &quot;wb&quot;
-    ) as f:
-        pickle.dump(lambdas_list, f)
+    <span class="n">envi_et</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">envi_xml</span><span class="p">)</span>
+    <span class="n">liga_et</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">liga_xml</span><span class="p">)</span>
+    <span class="n">ligb_et</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">ligb_xml</span><span class="p">)</span>
+    <span class="n">ligs_et</span> <span class="o">=</span> <span class="p">[</span><span class="n">liga_et</span><span class="p">,</span> <span class="n">ligb_et</span><span class="p">]</span>
 
-    for lambdas in lambdas_list:
-        print(lambdas)
-        system_xml, top, coor = make_alchemical_system(
-            ligs_et,
-            [liga_top, ligb_top],
-            ligs_common_atoms,
-            ligs_coor,
-            lambdas,
-            envi_et,
-            envi_top,
-            envi_coor,
-        )
+    <span class="n">liga_common_atoms</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">mcs</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">ligb_common_atoms</span> <span class="o">=</span> <span class="p">[</span><span class="n">mcs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">liga_common_atoms</span><span class="p">]</span>
+    <span class="n">ligs_common_atoms</span> <span class="o">=</span> <span class="p">[</span><span class="n">liga_common_atoms</span><span class="p">,</span> <span class="n">ligb_common_atoms</span><span class="p">]</span>
 
-        tree = ET.ElementTree(system_xml)
-        ET.indent(tree.getroot())
-        (elec0, vdw0), (elec1, vdw1) = lambdas
-        os.makedirs(
-            f&quot;./output/{phase}_phase/sys&quot;, exist_ok=True
-        )
-        tree.write(
-            f&quot;./output/{phase}_phase/sys/{elec0:.2f}_{vdw0:.2f}_{elec1:.2f}_{vdw1:.2f}.xml&quot;,
-            xml_declaration=True,
-            method=&quot;xml&quot;,
-            encoding=&quot;utf-8&quot;,
-        )
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;./output/</span><span class="si">{</span><span class="n">phase</span><span class="si">}</span><span class="s2">_phase&quot;</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;./output/</span><span class="si">{</span><span class="n">phase</span><span class="si">}</span><span class="s2">_phase/lambdas.pkl&quot;</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span>
+    <span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">lambdas_list</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
 
-        with open(
-            f&quot;./output/{phase}_phase/system.xyz&quot;, &quot;w&quot;
-        ) as f:
-            f.write(f&quot;{len(coor)}\n&quot;)
-            f.write(f&quot;{liga_name}_{ligb_name}\n&quot;)
-            for atom, xyz in zip(top.atoms(), coor):
-                xyz = xyz * 10
-                f.write(
-                    f&quot;{atom.element.symbol} {xyz[0]:.5f} {xyz[1]:.5f} {xyz[2]:.5f}\n&quot;
-                )
+    <span class="k">for</span> <span class="n">lambdas</span> <span class="ow">in</span> <span class="n">lambdas_list</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">lambdas</span><span class="p">)</span>
+        <span class="n">system_xml</span><span class="p">,</span> <span class="n">top</span><span class="p">,</span> <span class="n">coor</span> <span class="o">=</span> <span class="n">make_alchemical_system</span><span class="p">(</span>
+            <span class="n">ligs_et</span><span class="p">,</span>
+            <span class="p">[</span><span class="n">liga_top</span><span class="p">,</span> <span class="n">ligb_top</span><span class="p">],</span>
+            <span class="n">ligs_common_atoms</span><span class="p">,</span>
+            <span class="n">ligs_coor</span><span class="p">,</span>
+            <span class="n">lambdas</span><span class="p">,</span>
+            <span class="n">envi_et</span><span class="p">,</span>
+            <span class="n">envi_top</span><span class="p">,</span>
+            <span class="n">envi_coor</span><span class="p">,</span>
+        <span class="p">)</span>
 
-        mm.app.PDBFile.writeFile(
-            top,
-            coor * 10,
-            f&quot;./output/{phase}_phase/system.pdb&quot;,
-            keepIds=True,
-        )
+        <span class="n">tree</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">ElementTree</span><span class="p">(</span><span class="n">system_xml</span><span class="p">)</span>
+        <span class="n">ET</span><span class="o">.</span><span class="n">indent</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">getroot</span><span class="p">())</span>
+        <span class="p">(</span><span class="n">elec0</span><span class="p">,</span> <span class="n">vdw0</span><span class="p">),</span> <span class="p">(</span><span class="n">elec1</span><span class="p">,</span> <span class="n">vdw1</span><span class="p">)</span> <span class="o">=</span> <span class="n">lambdas</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;./output/</span><span class="si">{</span><span class="n">phase</span><span class="si">}</span><span class="s2">_phase/sys&quot;</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="n">tree</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;./output/</span><span class="si">{</span><span class="n">phase</span><span class="si">}</span><span class="s2">_phase/sys/</span><span class="si">{</span><span class="n">elec0</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">vdw0</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">elec1</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">vdw1</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">.xml&quot;</span><span class="p">,</span>
+            <span class="n">xml_declaration</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;xml&quot;</span><span class="p">,</span>
+            <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
 
-        with open(
-            f&quot;./output/{phase}_phase/topology.pkl&quot;, &quot;wb&quot;
-        ) as file_handle:
-            pickle.dump(top, file_handle)
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;./output/</span><span class="si">{</span><span class="n">phase</span><span class="si">}</span><span class="s2">_phase/system.xyz&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">coor</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">liga_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">ligb_name</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">atom</span><span class="p">,</span> <span class="n">xyz</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">top</span><span class="o">.</span><span class="n">atoms</span><span class="p">(),</span> <span class="n">coor</span><span class="p">):</span>
+                <span class="n">xyz</span> <span class="o">=</span> <span class="n">xyz</span> <span class="o">*</span> <span class="mi">10</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">atom</span><span class="o">.</span><span class="n">element</span><span class="o">.</span><span class="n">symbol</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">xyz</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">xyz</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">xyz</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">.5f</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
 
-        make_psf_from_topology(
-            top, f&quot;./output/{phase}_phase/topology.psf&quot;
-        )
+        <span class="n">mm</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">PDBFile</span><span class="o">.</span><span class="n">writeFile</span><span class="p">(</span>
+            <span class="n">top</span><span class="p">,</span>
+            <span class="n">coor</span> <span class="o">*</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;./output/</span><span class="si">{</span><span class="n">phase</span><span class="si">}</span><span class="s2">_phase/system.pdb&quot;</span><span class="p">,</span>
+            <span class="n">keepIds</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;./output/</span><span class="si">{</span><span class="n">phase</span><span class="si">}</span><span class="s2">_phase/topology.pkl&quot;</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">file_handle</span><span class="p">:</span>
+            <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">top</span><span class="p">,</span> <span class="n">file_handle</span><span class="p">)</span>
+
+        <span class="n">make_psf_from_topology</span><span class="p">(</span>
+            <span class="n">top</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;./output/</span><span class="si">{</span><span class="n">phase</span><span class="si">}</span><span class="s2">_phase/topology.psf&quot;</span>
+        <span class="p">)</span>
 <br/></pre></div>
 </div>
 </div>
@@ -585,59 +585,59 @@ an iterator in version 3.5
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>for phase, lambdas in product([&#39;water&#39;, &#39;protein&#39;], lambdas_list):
-    (elec0, vdw0), (elec1, vdw1) = lambdas
-    lambdas_str = f&quot;{elec0:.2f}_{vdw0:.2f}_{elec1:.2f}_{vdw1:.2f}&quot;
-    print(f&quot;Running simulation for {phase} phase and lambdas {lambdas_str}&quot;, flush=True)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">phase</span><span class="p">,</span> <span class="n">lambdas</span> <span class="ow">in</span> <span class="n">product</span><span class="p">([</span><span class="s1">&#39;water&#39;</span><span class="p">,</span> <span class="s1">&#39;protein&#39;</span><span class="p">],</span> <span class="n">lambdas_list</span><span class="p">):</span>
+    <span class="p">(</span><span class="n">elec0</span><span class="p">,</span> <span class="n">vdw0</span><span class="p">),</span> <span class="p">(</span><span class="n">elec1</span><span class="p">,</span> <span class="n">vdw1</span><span class="p">)</span> <span class="o">=</span> <span class="n">lambdas</span>
+    <span class="n">lambdas_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">elec0</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">vdw0</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">elec1</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">vdw1</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Running simulation for </span><span class="si">{</span><span class="n">phase</span><span class="si">}</span><span class="s2"> phase and lambdas </span><span class="si">{</span><span class="n">lambdas_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    ## deserialize the system
-    with open(
-        f&quot;./output/{phase}_phase/sys/{elec0:.2f}_{vdw0:.2f}_{elec1:.2f}_{vdw1:.2f}.xml&quot;,
-        &quot;r&quot;,
-    ) as f:
-        system = mm.XmlSerializer.deserialize(f.read())
+    <span class="c1">## deserialize the system</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;./output/</span><span class="si">{</span><span class="n">phase</span><span class="si">}</span><span class="s2">_phase/sys/</span><span class="si">{</span><span class="n">elec0</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">vdw0</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">elec1</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">vdw1</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">.xml&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;r&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">system</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">XmlSerializer</span><span class="o">.</span><span class="n">deserialize</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
 
-    ## add barostat
-    system.addForce(mm.MonteCarloBarostat(1 * unit.atmospheres, 298.15 * unit.kelvin))
+    <span class="c1">## add barostat</span>
+    <span class="n">system</span><span class="o">.</span><span class="n">addForce</span><span class="p">(</span><span class="n">mm</span><span class="o">.</span><span class="n">MonteCarloBarostat</span><span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="n">unit</span><span class="o">.</span><span class="n">atmospheres</span><span class="p">,</span> <span class="mf">298.15</span> <span class="o">*</span> <span class="n">unit</span><span class="o">.</span><span class="n">kelvin</span><span class="p">))</span>
 
-    with open(f&quot;./output/{phase}_phase/topology.pkl&quot;, &quot;rb&quot;) as f:
-        topology = pickle.load(f)
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;./output/</span><span class="si">{</span><span class="n">phase</span><span class="si">}</span><span class="s2">_phase/topology.pkl&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">topology</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 
-    pdb = app.PDBFile(f&quot;./output/{phase}_phase/system.pdb&quot;)
+    <span class="n">pdb</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">PDBFile</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;./output/</span><span class="si">{</span><span class="n">phase</span><span class="si">}</span><span class="s2">_phase/system.pdb&quot;</span><span class="p">)</span>
 
-    integrator = mm.LangevinMiddleIntegrator(
-        298.15 * unit.kelvin, 1.0 / unit.picosecond, 0.002 * unit.picoseconds
-    )
-    platform = mm.Platform.getPlatformByName(&quot;CUDA&quot;)
-    simulation = app.Simulation(topology, system, integrator, platform)
+    <span class="n">integrator</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">LangevinMiddleIntegrator</span><span class="p">(</span>
+        <span class="mf">298.15</span> <span class="o">*</span> <span class="n">unit</span><span class="o">.</span><span class="n">kelvin</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">unit</span><span class="o">.</span><span class="n">picosecond</span><span class="p">,</span> <span class="mf">0.002</span> <span class="o">*</span> <span class="n">unit</span><span class="o">.</span><span class="n">picoseconds</span>
+    <span class="p">)</span>
+    <span class="n">platform</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">Platform</span><span class="o">.</span><span class="n">getPlatformByName</span><span class="p">(</span><span class="s2">&quot;CUDA&quot;</span><span class="p">)</span>
+    <span class="n">simulation</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">Simulation</span><span class="p">(</span><span class="n">topology</span><span class="p">,</span> <span class="n">system</span><span class="p">,</span> <span class="n">integrator</span><span class="p">,</span> <span class="n">platform</span><span class="p">)</span>
 
-    simulation.context.setPositions(pdb.positions)
-    print(&quot;Minimizing energy&quot;, flush=True)
-    simulation.minimizeEnergy()
+    <span class="n">simulation</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">setPositions</span><span class="p">(</span><span class="n">pdb</span><span class="o">.</span><span class="n">positions</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Minimizing energy&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">simulation</span><span class="o">.</span><span class="n">minimizeEnergy</span><span class="p">()</span>
 
-    print(&quot;Equilibrating&quot;, flush=True)
-    simulation.step(1_000)
-    #simulation.step(100_000)
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Equilibrating&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">simulation</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="mi">1_000</span><span class="p">)</span>
+    <span class="c1">#simulation.step(100_000)</span>
 
-    os.makedirs(f&quot;./output/{phase}_phase/traj&quot;, exist_ok=True)
-    simulation.reporters.append(
-        app.DCDReporter(
-            f&quot;./output/{phase}_phase/traj/{lambdas_str}.dcd&quot;,
-            1_000,
-            append=False,
-        )
-    )
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;./output/</span><span class="si">{</span><span class="n">phase</span><span class="si">}</span><span class="s2">_phase/traj&quot;</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">simulation</span><span class="o">.</span><span class="n">reporters</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">DCDReporter</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;./output/</span><span class="si">{</span><span class="n">phase</span><span class="si">}</span><span class="s2">_phase/traj/</span><span class="si">{</span><span class="n">lambdas_str</span><span class="si">}</span><span class="s2">.dcd&quot;</span><span class="p">,</span>
+            <span class="mi">1_000</span><span class="p">,</span>
+            <span class="n">append</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
 
-    print(&quot;Running simulation&quot;, flush=True)
-    start_time = time.time()
-    simulation.step(100_000)
-    #simulation.step(12_500_000)
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Running simulation&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">simulation</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="mi">100_000</span><span class="p">)</span>
+    <span class="c1">#simulation.step(12_500_000)</span>
 
-    simulation.saveCheckpoint(
-        f&quot;./output/{phase}_phase/traj/{lambdas_str}.chk&quot;
-    )
+    <span class="n">simulation</span><span class="o">.</span><span class="n">saveCheckpoint</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;./output/</span><span class="si">{</span><span class="n">phase</span><span class="si">}</span><span class="s2">_phase/traj/</span><span class="si">{</span><span class="n">lambdas_str</span><span class="si">}</span><span class="s2">.chk&quot;</span>
+    <span class="p">)</span>
 
-    print(f&quot;Simulation finished in {time.time() - start_time:.2f} seconds&quot;, flush=True)
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Simulation finished in </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start_time</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -762,56 +762,56 @@ Simulation finished in 91.20 seconds
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>def compute_energy(phase, lambdas):
-    (elec0, vdw0), (elec1, vdw1) = lambdas
-    lambdas_str = f&quot;{elec0:.2f}_{vdw0:.2f}_{elec1:.2f}_{vdw1:.2f}&quot;
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">compute_energy</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">lambdas</span><span class="p">):</span>
+    <span class="p">(</span><span class="n">elec0</span><span class="p">,</span> <span class="n">vdw0</span><span class="p">),</span> <span class="p">(</span><span class="n">elec1</span><span class="p">,</span> <span class="n">vdw1</span><span class="p">)</span> <span class="o">=</span> <span class="n">lambdas</span>
+    <span class="n">lambdas_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">elec0</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">vdw0</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">elec1</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">vdw1</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span>
 
-    ## deserialize the system
-    with open(
-        f&quot;./output/{phase}_phase/sys/{elec0:.2f}_{vdw0:.2f}_{elec1:.2f}_{vdw1:.2f}.xml&quot;,
-        &quot;r&quot;,
-    ) as f:
-        system = mm.XmlSerializer.deserialize(f.read())
+    <span class="c1">## deserialize the system</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;./output/</span><span class="si">{</span><span class="n">phase</span><span class="si">}</span><span class="s2">_phase/sys/</span><span class="si">{</span><span class="n">elec0</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">vdw0</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">elec1</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">vdw1</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">.xml&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;r&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">system</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">XmlSerializer</span><span class="o">.</span><span class="n">deserialize</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
 
-    with open(f&quot;./output/{phase}_phase/topology.pkl&quot;, &quot;rb&quot;) as f:
-        topology = pickle.load(f)
-    topology = mdtraj.Topology.from_openmm(topology)
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;./output/</span><span class="si">{</span><span class="n">phase</span><span class="si">}</span><span class="s2">_phase/topology.pkl&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">topology</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="n">topology</span> <span class="o">=</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Topology</span><span class="o">.</span><span class="n">from_openmm</span><span class="p">(</span><span class="n">topology</span><span class="p">)</span>
 
-    pdb = app.PDBFile(f&quot;./output/{phase}_phase/system.pdb&quot;)
+    <span class="n">pdb</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">PDBFile</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;./output/</span><span class="si">{</span><span class="n">phase</span><span class="si">}</span><span class="s2">_phase/system.pdb&quot;</span><span class="p">)</span>
 
-    integrator = mm.LangevinMiddleIntegrator(
-        298.15 * unit.kelvin, 1.0 / unit.picosecond, 0.002 * unit.picoseconds
-    )
-    kbT = 298.15 * unit.kelvin * unit.BOLTZMANN_CONSTANT_kB * unit.AVOGADRO_CONSTANT_NA
+    <span class="n">integrator</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">LangevinMiddleIntegrator</span><span class="p">(</span>
+        <span class="mf">298.15</span> <span class="o">*</span> <span class="n">unit</span><span class="o">.</span><span class="n">kelvin</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">unit</span><span class="o">.</span><span class="n">picosecond</span><span class="p">,</span> <span class="mf">0.002</span> <span class="o">*</span> <span class="n">unit</span><span class="o">.</span><span class="n">picoseconds</span>
+    <span class="p">)</span>
+    <span class="n">kbT</span> <span class="o">=</span> <span class="mf">298.15</span> <span class="o">*</span> <span class="n">unit</span><span class="o">.</span><span class="n">kelvin</span> <span class="o">*</span> <span class="n">unit</span><span class="o">.</span><span class="n">BOLTZMANN_CONSTANT_kB</span> <span class="o">*</span> <span class="n">unit</span><span class="o">.</span><span class="n">AVOGADRO_CONSTANT_NA</span>
 
-    platform = mm.Platform.getPlatformByName(&quot;CPU&quot;)
-    simulation = app.Simulation(topology, system, integrator, platform)
+    <span class="n">platform</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">Platform</span><span class="o">.</span><span class="n">getPlatformByName</span><span class="p">(</span><span class="s2">&quot;CPU&quot;</span><span class="p">)</span>
+    <span class="n">simulation</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">Simulation</span><span class="p">(</span><span class="n">topology</span><span class="p">,</span> <span class="n">system</span><span class="p">,</span> <span class="n">integrator</span><span class="p">,</span> <span class="n">platform</span><span class="p">)</span>
 
-    start_time = time.time()
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
-    ## load trajectories
-    reduced_u = []
-    for lambdas in lambdas_list:
-        (elec0, vdw0), (elec1, vdw1) = lambdas
-        lambdas_str_traj = f&quot;{elec0:.2f}_{vdw0:.2f}_{elec1:.2f}_{vdw1:.2f}&quot;
-        traj = mdtraj.load_dcd(
-            f&quot;./output/{phase}_phase/traj/{lambdas_str_traj}.dcd&quot;,
-            top=topology,
-            stride = 1
-        )
+    <span class="c1">## load trajectories</span>
+    <span class="n">reduced_u</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">lambdas</span> <span class="ow">in</span> <span class="n">lambdas_list</span><span class="p">:</span>
+        <span class="p">(</span><span class="n">elec0</span><span class="p">,</span> <span class="n">vdw0</span><span class="p">),</span> <span class="p">(</span><span class="n">elec1</span><span class="p">,</span> <span class="n">vdw1</span><span class="p">)</span> <span class="o">=</span> <span class="n">lambdas</span>
+        <span class="n">lambdas_str_traj</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">elec0</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">vdw0</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">elec1</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">vdw1</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">traj</span> <span class="o">=</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">load_dcd</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;./output/</span><span class="si">{</span><span class="n">phase</span><span class="si">}</span><span class="s2">_phase/traj/</span><span class="si">{</span><span class="n">lambdas_str_traj</span><span class="si">}</span><span class="s2">.dcd&quot;</span><span class="p">,</span>
+            <span class="n">top</span><span class="o">=</span><span class="n">topology</span><span class="p">,</span>
+            <span class="n">stride</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="p">)</span>
 
-        reduced_u.append([])
-        for xyz, unit_cell_vectors in zip(traj.xyz, traj.unitcell_vectors):
-            simulation.context.setPositions(xyz)
-            simulation.context.setPeriodicBoxVectors(*unit_cell_vectors)
-            u = simulation.context.getState(getEnergy=True).getPotentialEnergy() / kbT
-            reduced_u[-1].append(u)
+        <span class="n">reduced_u</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
+        <span class="k">for</span> <span class="n">xyz</span><span class="p">,</span> <span class="n">unit_cell_vectors</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">traj</span><span class="o">.</span><span class="n">xyz</span><span class="p">,</span> <span class="n">traj</span><span class="o">.</span><span class="n">unitcell_vectors</span><span class="p">):</span>
+            <span class="n">simulation</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">setPositions</span><span class="p">(</span><span class="n">xyz</span><span class="p">)</span>
+            <span class="n">simulation</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">setPeriodicBoxVectors</span><span class="p">(</span><span class="o">*</span><span class="n">unit_cell_vectors</span><span class="p">)</span>
+            <span class="n">u</span> <span class="o">=</span> <span class="n">simulation</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">getState</span><span class="p">(</span><span class="n">getEnergy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">getPotentialEnergy</span><span class="p">()</span> <span class="o">/</span> <span class="n">kbT</span>
+            <span class="n">reduced_u</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
 
-    reduced_u = np.array(reduced_u)
+    <span class="n">reduced_u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">reduced_u</span><span class="p">)</span>
 
-    print(f&quot;Time taken: {time.time() - start_time}&quot;, flush=True)
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Time taken: </span><span class="si">{</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start_time</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    return reduced_u
+    <span class="k">return</span> <span class="n">reduced_u</span>
 </pre></div>
 </div>
 </div>
@@ -819,14 +819,14 @@ Simulation finished in 91.20 seconds
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>for phase, lambdas in product([&#39;water&#39;, &#39;protein&#39;], lambdas_list):
-    print(f&quot;Computing energies for {phase} phase and lambdas {lambdas}&quot;, flush=True)
-    u = compute_energy(phase, lambdas)
-    os.makedirs(f&quot;./output/{phase}_phase/reduced_potentials&quot;, exist_ok=True)
-    (elec0, vdw0), (elec1, vdw1) = lambdas
-    lambdas_str = f&quot;{elec0:.2f}_{vdw0:.2f}_{elec1:.2f}_{vdw1:.2f}&quot;
-    with open(f&quot;./output/{phase}_phase/reduced_potentials/{lambdas_str}.pkl&quot;, &quot;wb&quot;) as f:
-        pickle.dump(u, f)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">phase</span><span class="p">,</span> <span class="n">lambdas</span> <span class="ow">in</span> <span class="n">product</span><span class="p">([</span><span class="s1">&#39;water&#39;</span><span class="p">,</span> <span class="s1">&#39;protein&#39;</span><span class="p">],</span> <span class="n">lambdas_list</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Computing energies for </span><span class="si">{</span><span class="n">phase</span><span class="si">}</span><span class="s2"> phase and lambdas </span><span class="si">{</span><span class="n">lambdas</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">compute_energy</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span> <span class="n">lambdas</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;./output/</span><span class="si">{</span><span class="n">phase</span><span class="si">}</span><span class="s2">_phase/reduced_potentials&quot;</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="p">(</span><span class="n">elec0</span><span class="p">,</span> <span class="n">vdw0</span><span class="p">),</span> <span class="p">(</span><span class="n">elec1</span><span class="p">,</span> <span class="n">vdw1</span><span class="p">)</span> <span class="o">=</span> <span class="n">lambdas</span>
+    <span class="n">lambdas_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">elec0</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">vdw0</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">elec1</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">vdw1</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;./output/</span><span class="si">{</span><span class="n">phase</span><span class="si">}</span><span class="s2">_phase/reduced_potentials/</span><span class="si">{</span><span class="n">lambdas_str</span><span class="si">}</span><span class="s2">.pkl&quot;</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1127,28 +1127,28 @@ Time taken: 282.6125600337982
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>## read potential energy
-deltaF = {}
-for phase in [&quot;water&quot;, &quot;protein&quot;]:
-    us = []
-    for lambdas in lambdas_list:
-        (elec0, vdw0), (elec1, vdw1) = lambdas
-        lambdas_str = f&quot;{elec0:.2f}_{vdw0:.2f}_{elec1:.2f}_{vdw1:.2f}&quot;
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## read potential energy</span>
+<span class="n">deltaF</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">phase</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;water&quot;</span><span class="p">,</span> <span class="s2">&quot;protein&quot;</span><span class="p">]:</span>
+    <span class="n">us</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">lambdas</span> <span class="ow">in</span> <span class="n">lambdas_list</span><span class="p">:</span>
+        <span class="p">(</span><span class="n">elec0</span><span class="p">,</span> <span class="n">vdw0</span><span class="p">),</span> <span class="p">(</span><span class="n">elec1</span><span class="p">,</span> <span class="n">vdw1</span><span class="p">)</span> <span class="o">=</span> <span class="n">lambdas</span>
+        <span class="n">lambdas_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">elec0</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">vdw0</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">elec1</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">vdw1</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span>
 
-        with open(
-            f&quot;./output/{phase}_phase/reduced_potentials/{lambdas_str}.pkl&quot;,
-            &quot;rb&quot;,
-        ) as f:
-            u = pickle.load(f)
-            u = u.reshape(-1)
-            us.append(u)
-    us = np.array(us)
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;./output/</span><span class="si">{</span><span class="n">phase</span><span class="si">}</span><span class="s2">_phase/reduced_potentials/</span><span class="si">{</span><span class="n">lambdas_str</span><span class="si">}</span><span class="s2">.pkl&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;rb&quot;</span><span class="p">,</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">u</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="n">u</span> <span class="o">=</span> <span class="n">u</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">us</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
+    <span class="n">us</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">us</span><span class="p">)</span>
 
-    num_conf = np.array([us.shape[1] // us.shape[0] for _ in range(us.shape[0])])
-    fastmbar = FastMBAR(us, num_conf, verbose=True, method=&quot;L-BFGS-B&quot;)
-    kbT = 298.15 * unit.kelvin * unit.BOLTZMANN_CONSTANT_kB * unit.AVOGADRO_CONSTANT_NA
-    kbT = kbT.value_in_unit(unit.kilocalorie_per_mole)
-    deltaF[phase] = fastmbar.DeltaF[0, -1].item()*kbT
+    <span class="n">num_conf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">us</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">//</span> <span class="n">us</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">us</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])])</span>
+    <span class="n">fastmbar</span> <span class="o">=</span> <span class="n">FastMBAR</span><span class="p">(</span><span class="n">us</span><span class="p">,</span> <span class="n">num_conf</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;L-BFGS-B&quot;</span><span class="p">)</span>
+    <span class="n">kbT</span> <span class="o">=</span> <span class="mf">298.15</span> <span class="o">*</span> <span class="n">unit</span><span class="o">.</span><span class="n">kelvin</span> <span class="o">*</span> <span class="n">unit</span><span class="o">.</span><span class="n">BOLTZMANN_CONSTANT_kB</span> <span class="o">*</span> <span class="n">unit</span><span class="o">.</span><span class="n">AVOGADRO_CONSTANT_NA</span>
+    <span class="n">kbT</span> <span class="o">=</span> <span class="n">kbT</span><span class="o">.</span><span class="n">value_in_unit</span><span class="p">(</span><span class="n">unit</span><span class="o">.</span><span class="n">kilocalorie_per_mole</span><span class="p">)</span>
+    <span class="n">deltaF</span><span class="p">[</span><span class="n">phase</span><span class="p">]</span> <span class="o">=</span> <span class="n">fastmbar</span><span class="o">.</span><span class="n">DeltaF</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="o">*</span><span class="n">kbT</span>
 </pre></div>
 </div>
 </div>
@@ -1335,8 +1335,8 @@ CONVERGENCE: REL_REDUCTION_OF_F_&lt;=_FACTR*EPSMCH
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ddF = deltaF[&#39;protein&#39;] - deltaF[&#39;water&#39;]
-print(f&quot;ddG: {ddF:.2f} kcal/mol&quot;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ddF</span> <span class="o">=</span> <span class="n">deltaF</span><span class="p">[</span><span class="s1">&#39;protein&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">deltaF</span><span class="p">[</span><span class="s1">&#39;water&#39;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ddG: </span><span class="si">{</span><span class="n">ddF</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> kcal/mol&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1352,7 +1352,7 @@ ddG: 0.98 kcal/mol
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>kbT
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">kbT</span>
 </pre></div>
 </div>
 </div>
