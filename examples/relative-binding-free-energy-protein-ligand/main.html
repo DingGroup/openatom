@@ -1,0 +1,1455 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Computing relative binding free energies with an alchemical approach &#8212; atom 0.0.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=5db94ae7"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/relative-binding-free-energy-protein-ligand/main';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="API" href="../../API.html" />
+    <link rel="prev" title="Relative hydration free energy between benzene and phenol" href="../relative-hydration-free-energy-benzene-phenol/main.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/logo.png" class="logo__image only-light" alt="atom 0.0.0 documentation - Home"/>
+    <script>document.write(`<img src="../../_static/logo.png" class="logo__image only-dark" alt="atom 0.0.0 documentation - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../examples.html">Examples</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../relative-hydration-free-energy-benzene-phenol/main.html">Relative hydration free energy between benzene and phenol</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Computing relative binding free energies with an alchemical approach</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../../API.html">API</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/DingGroup/atom" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/examples/relative-binding-free-energy-protein-ligand/main.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Computing relative binding free energies with an alchemical approach</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="Computing-relative-binding-free-energies-with-an-alchemical-approach">
+<h1>Computing relative binding free energies with an alchemical approach<a class="headerlink" href="#Computing-relative-binding-free-energies-with-an-alchemical-approach" title="Link to this heading">#</a></h1>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import numpy as np
+from itertools import product
+from atom.functions import make_alchemical_system, compute_mcs_VF2
+from dltoolbox import make_psf_from_topology
+import openmm as mm
+import openmm.unit as unit
+import openmm.app as app
+from openmm import XmlSerializer
+import xml.etree.ElementTree as ET
+import pandas as pd
+import pickle
+import mdtraj
+import argparse
+import os
+from sys import exit
+import time
+import tqdm
+from FastMBAR import FastMBAR
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>liga_name, ligb_name = &quot;ejm_55&quot;, &quot;ejm_50&quot;
+
+liga_topology = app.AmberPrmtopFile(
+    f&quot;./structures/water_phase/{liga_name}.prmtop&quot;
+).topology
+
+ligb_topology = app.AmberPrmtopFile(
+    f&quot;./structures/water_phase/{ligb_name}.prmtop&quot;
+).topology
+
+mcs = compute_mcs_VF2(liga_topology, ligb_topology, timeout=5)
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>lambdas_list = [
+    [(1.0, 1.0), (0.0, 0.0)],
+    [(0.5, 1.0), (0.0, 0.0)],
+    [(0.0, 1.0), (0.0, 0.0)],
+    [(0.0, 0.9), (0.0, 0.1)],
+    [(0.0, 0.7), (0.0, 0.3)],
+    [(0.0, 0.5), (0.0, 0.5)],
+    [(0.0, 0.3), (0.0, 0.7)],
+    [(0.0, 0.1), (0.0, 0.9)],
+    [(0.0, 0.0), (0.0, 1.0)],
+    [(0.0, 0.0), (0.5, 1.0)],
+    [(0.0, 0.0), (1.0, 1.0)],
+]
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>for phase in [&quot;water&quot;, &quot;protein&quot;]:
+    envi_prmtop = app.AmberPrmtopFile(
+        f&quot;./structures/{phase}_phase/env.prmtop&quot;
+    )
+    envi_coor = app.PDBFile(
+        f&quot;./structures/{phase}_phase/env.pdb&quot;
+    ).getPositions()
+
+    envi_system = envi_prmtop.createSystem(
+        nonbondedMethod=app.PME,
+        nonbondedCutoff=1.0 * unit.nanometer,
+        constraints=app.HBonds,
+        switchDistance=0.9 * unit.nanometer,
+    )
+    envi_top = envi_prmtop.topology
+    envi_coor = np.array(envi_coor.value_in_unit(unit.nanometer))
+
+    # load prmtop and xyz files
+    liga_prmtop = app.AmberPrmtopFile(
+        f&quot;./structures/{phase}_phase/{liga_name}.prmtop&quot;,
+        envi_top.getPeriodicBoxVectors(),
+    )
+
+    liga_top = liga_prmtop.topology
+    liga_system = liga_prmtop.createSystem(
+        nonbondedMethod=app.PME,
+        nonbondedCutoff=1.0 * unit.nanometer,
+        constraints=app.HBonds,
+        switchDistance=0.9 * unit.nanometer,
+    )
+
+    ligb_prmtop = app.AmberPrmtopFile(
+        f&quot;./structures/{phase}_phase/{ligb_name}.prmtop&quot;,
+        envi_top.getPeriodicBoxVectors(),
+    )
+
+
+    ligb_top = ligb_prmtop.topology
+    ligb_system = ligb_prmtop.createSystem(
+        nonbondedMethod=app.PME,
+        nonbondedCutoff=1.0 * unit.nanometer,
+        constraints=app.HBonds,
+        switchDistance=0.9 * unit.nanometer,
+    )
+
+
+    liga_coor = mdtraj.load_xyz(
+        f&quot;./structures/{phase}_phase/{liga_name}_aligned.xyz&quot;,
+        top=mdtraj.Topology.from_openmm(liga_prmtop.topology),
+    ).xyz[0]
+    ligb_coor = mdtraj.load_xyz(
+        f&quot;./structures/{phase}_phase/{ligb_name}_aligned.xyz&quot;,
+        top=mdtraj.Topology.from_openmm(ligb_prmtop.topology),
+    ).xyz[0]
+
+
+    ligs_coor = [liga_coor, ligb_coor]
+
+    envi_xml = XmlSerializer.serializeSystem(envi_system)
+    liga_xml = XmlSerializer.serializeSystem(liga_system)
+    ligb_xml = XmlSerializer.serializeSystem(ligb_system)
+
+    envi_et = ET.fromstring(envi_xml)
+    liga_et = ET.fromstring(liga_xml)
+    ligb_et = ET.fromstring(ligb_xml)
+    ligs_et = [liga_et, ligb_et]
+
+    liga_common_atoms = list(mcs.keys())
+    ligb_common_atoms = [mcs[i] for i in liga_common_atoms]
+    ligs_common_atoms = [liga_common_atoms, ligb_common_atoms]
+
+    os.makedirs(f&quot;./output/{phase}_phase&quot;, exist_ok=True)
+    with open(
+        f&quot;./output/{phase}_phase/lambdas.pkl&quot;, &quot;wb&quot;
+    ) as f:
+        pickle.dump(lambdas_list, f)
+
+    for lambdas in lambdas_list:
+        print(lambdas)
+        system_xml, top, coor = make_alchemical_system(
+            ligs_et,
+            [liga_top, ligb_top],
+            ligs_common_atoms,
+            ligs_coor,
+            lambdas,
+            envi_et,
+            envi_top,
+            envi_coor,
+        )
+
+        tree = ET.ElementTree(system_xml)
+        ET.indent(tree.getroot())
+        (elec0, vdw0), (elec1, vdw1) = lambdas
+        os.makedirs(
+            f&quot;./output/{phase}_phase/sys&quot;, exist_ok=True
+        )
+        tree.write(
+            f&quot;./output/{phase}_phase/sys/{elec0:.2f}_{vdw0:.2f}_{elec1:.2f}_{vdw1:.2f}.xml&quot;,
+            xml_declaration=True,
+            method=&quot;xml&quot;,
+            encoding=&quot;utf-8&quot;,
+        )
+
+        with open(
+            f&quot;./output/{phase}_phase/system.xyz&quot;, &quot;w&quot;
+        ) as f:
+            f.write(f&quot;{len(coor)}\n&quot;)
+            f.write(f&quot;{liga_name}_{ligb_name}\n&quot;)
+            for atom, xyz in zip(top.atoms(), coor):
+                xyz = xyz * 10
+                f.write(
+                    f&quot;{atom.element.symbol} {xyz[0]:.5f} {xyz[1]:.5f} {xyz[2]:.5f}\n&quot;
+                )
+
+        mm.app.PDBFile.writeFile(
+            top,
+            coor * 10,
+            f&quot;./output/{phase}_phase/system.pdb&quot;,
+            keepIds=True,
+        )
+
+        with open(
+            f&quot;./output/{phase}_phase/topology.pkl&quot;, &quot;wb&quot;
+        ) as file_handle:
+            pickle.dump(top, file_handle)
+
+        make_psf_from_topology(
+            top, f&quot;./output/{phase}_phase/topology.psf&quot;
+        )
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[(1.0, 1.0), (0.0, 0.0)]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+&lt;class &#39;networkx.utils.decorators.argmap&#39;&gt; compilation 17:3: FutureWarning:
+
+single_target_shortest_path_length will return a dict instead of
+an iterator in version 3.5
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[(0.5, 1.0), (0.0, 0.0)]
+[(0.0, 1.0), (0.0, 0.0)]
+[(0.0, 0.9), (0.0, 0.1)]
+[(0.0, 0.7), (0.0, 0.3)]
+[(0.0, 0.5), (0.0, 0.5)]
+[(0.0, 0.3), (0.0, 0.7)]
+[(0.0, 0.1), (0.0, 0.9)]
+[(0.0, 0.0), (0.0, 1.0)]
+[(0.0, 0.0), (0.5, 1.0)]
+[(0.0, 0.0), (1.0, 1.0)]
+[(1.0, 1.0), (0.0, 0.0)]
+[(0.5, 1.0), (0.0, 0.0)]
+[(0.0, 1.0), (0.0, 0.0)]
+[(0.0, 0.9), (0.0, 0.1)]
+[(0.0, 0.7), (0.0, 0.3)]
+[(0.0, 0.5), (0.0, 0.5)]
+[(0.0, 0.3), (0.0, 0.7)]
+[(0.0, 0.1), (0.0, 0.9)]
+[(0.0, 0.0), (0.0, 1.0)]
+[(0.0, 0.0), (0.5, 1.0)]
+[(0.0, 0.0), (1.0, 1.0)]
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>for phase, lambdas in product([&#39;water&#39;, &#39;protein&#39;], lambdas_list):
+    (elec0, vdw0), (elec1, vdw1) = lambdas
+    lambdas_str = f&quot;{elec0:.2f}_{vdw0:.2f}_{elec1:.2f}_{vdw1:.2f}&quot;
+    print(f&quot;Running simulation for {phase} phase and lambdas {lambdas_str}&quot;, flush=True)
+
+    ## deserialize the system
+    with open(
+        f&quot;./output/{phase}_phase/sys/{elec0:.2f}_{vdw0:.2f}_{elec1:.2f}_{vdw1:.2f}.xml&quot;,
+        &quot;r&quot;,
+    ) as f:
+        system = mm.XmlSerializer.deserialize(f.read())
+
+    ## add barostat
+    system.addForce(mm.MonteCarloBarostat(1 * unit.atmospheres, 298.15 * unit.kelvin))
+
+    with open(f&quot;./output/{phase}_phase/topology.pkl&quot;, &quot;rb&quot;) as f:
+        topology = pickle.load(f)
+
+    pdb = app.PDBFile(f&quot;./output/{phase}_phase/system.pdb&quot;)
+
+    integrator = mm.LangevinMiddleIntegrator(
+        298.15 * unit.kelvin, 1.0 / unit.picosecond, 0.002 * unit.picoseconds
+    )
+    platform = mm.Platform.getPlatformByName(&quot;CUDA&quot;)
+    simulation = app.Simulation(topology, system, integrator, platform)
+
+    simulation.context.setPositions(pdb.positions)
+    print(&quot;Minimizing energy&quot;, flush=True)
+    simulation.minimizeEnergy()
+
+    print(&quot;Equilibrating&quot;, flush=True)
+    simulation.step(1_000)
+    #simulation.step(100_000)
+
+    os.makedirs(f&quot;./output/{phase}_phase/traj&quot;, exist_ok=True)
+    simulation.reporters.append(
+        app.DCDReporter(
+            f&quot;./output/{phase}_phase/traj/{lambdas_str}.dcd&quot;,
+            1_000,
+            append=False,
+        )
+    )
+
+    print(&quot;Running simulation&quot;, flush=True)
+    start_time = time.time()
+    simulation.step(100_000)
+    #simulation.step(12_500_000)
+
+    simulation.saveCheckpoint(
+        f&quot;./output/{phase}_phase/traj/{lambdas_str}.chk&quot;
+    )
+
+    print(f&quot;Simulation finished in {time.time() - start_time:.2f} seconds&quot;, flush=True)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Running simulation for water phase and lambdas 1.00_1.00_0.00_0.00
+Minimizing energy
+Equilibrating
+Running simulation
+Simulation finished in 23.06 seconds
+Running simulation for water phase and lambdas 0.50_1.00_0.00_0.00
+Minimizing energy
+Equilibrating
+Running simulation
+Simulation finished in 23.15 seconds
+Running simulation for water phase and lambdas 0.00_1.00_0.00_0.00
+Minimizing energy
+Equilibrating
+Running simulation
+Simulation finished in 23.54 seconds
+Running simulation for water phase and lambdas 0.00_0.90_0.00_0.10
+Minimizing energy
+Equilibrating
+Running simulation
+Simulation finished in 23.21 seconds
+Running simulation for water phase and lambdas 0.00_0.70_0.00_0.30
+Minimizing energy
+Equilibrating
+Running simulation
+Simulation finished in 23.65 seconds
+Running simulation for water phase and lambdas 0.00_0.50_0.00_0.50
+Minimizing energy
+Equilibrating
+Running simulation
+Simulation finished in 23.29 seconds
+Running simulation for water phase and lambdas 0.00_0.30_0.00_0.70
+Minimizing energy
+Equilibrating
+Running simulation
+Simulation finished in 23.70 seconds
+Running simulation for water phase and lambdas 0.00_0.10_0.00_0.90
+Minimizing energy
+Equilibrating
+Running simulation
+Simulation finished in 23.20 seconds
+Running simulation for water phase and lambdas 0.00_0.00_0.00_1.00
+Minimizing energy
+Equilibrating
+Running simulation
+Simulation finished in 23.26 seconds
+Running simulation for water phase and lambdas 0.00_0.00_0.50_1.00
+Minimizing energy
+Equilibrating
+Running simulation
+Simulation finished in 23.26 seconds
+Running simulation for water phase and lambdas 0.00_0.00_1.00_1.00
+Minimizing energy
+Equilibrating
+Running simulation
+Simulation finished in 23.27 seconds
+Running simulation for protein phase and lambdas 1.00_1.00_0.00_0.00
+Minimizing energy
+Equilibrating
+Running simulation
+Simulation finished in 93.63 seconds
+Running simulation for protein phase and lambdas 0.50_1.00_0.00_0.00
+Minimizing energy
+Equilibrating
+Running simulation
+Simulation finished in 93.60 seconds
+Running simulation for protein phase and lambdas 0.00_1.00_0.00_0.00
+Minimizing energy
+Equilibrating
+Running simulation
+Simulation finished in 92.71 seconds
+Running simulation for protein phase and lambdas 0.00_0.90_0.00_0.10
+Minimizing energy
+Equilibrating
+Running simulation
+Simulation finished in 92.70 seconds
+Running simulation for protein phase and lambdas 0.00_0.70_0.00_0.30
+Minimizing energy
+Equilibrating
+Running simulation
+Simulation finished in 92.26 seconds
+Running simulation for protein phase and lambdas 0.00_0.50_0.00_0.50
+Minimizing energy
+Equilibrating
+Running simulation
+Simulation finished in 90.68 seconds
+Running simulation for protein phase and lambdas 0.00_0.30_0.00_0.70
+Minimizing energy
+Equilibrating
+Running simulation
+Simulation finished in 90.52 seconds
+Running simulation for protein phase and lambdas 0.00_0.10_0.00_0.90
+Minimizing energy
+Equilibrating
+Running simulation
+Simulation finished in 91.04 seconds
+Running simulation for protein phase and lambdas 0.00_0.00_0.00_1.00
+Minimizing energy
+Equilibrating
+Running simulation
+Simulation finished in 91.15 seconds
+Running simulation for protein phase and lambdas 0.00_0.00_0.50_1.00
+Minimizing energy
+Equilibrating
+Running simulation
+Simulation finished in 91.54 seconds
+Running simulation for protein phase and lambdas 0.00_0.00_1.00_1.00
+Minimizing energy
+Equilibrating
+Running simulation
+Simulation finished in 91.20 seconds
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>def compute_energy(phase, lambdas):
+    (elec0, vdw0), (elec1, vdw1) = lambdas
+    lambdas_str = f&quot;{elec0:.2f}_{vdw0:.2f}_{elec1:.2f}_{vdw1:.2f}&quot;
+
+    ## deserialize the system
+    with open(
+        f&quot;./output/{phase}_phase/sys/{elec0:.2f}_{vdw0:.2f}_{elec1:.2f}_{vdw1:.2f}.xml&quot;,
+        &quot;r&quot;,
+    ) as f:
+        system = mm.XmlSerializer.deserialize(f.read())
+
+    with open(f&quot;./output/{phase}_phase/topology.pkl&quot;, &quot;rb&quot;) as f:
+        topology = pickle.load(f)
+    topology = mdtraj.Topology.from_openmm(topology)
+
+    pdb = app.PDBFile(f&quot;./output/{phase}_phase/system.pdb&quot;)
+
+    integrator = mm.LangevinMiddleIntegrator(
+        298.15 * unit.kelvin, 1.0 / unit.picosecond, 0.002 * unit.picoseconds
+    )
+    kbT = 298.15 * unit.kelvin * unit.BOLTZMANN_CONSTANT_kB * unit.AVOGADRO_CONSTANT_NA
+
+    platform = mm.Platform.getPlatformByName(&quot;CPU&quot;)
+    simulation = app.Simulation(topology, system, integrator, platform)
+
+    start_time = time.time()
+
+    ## load trajectories
+    reduced_u = []
+    for lambdas in lambdas_list:
+        (elec0, vdw0), (elec1, vdw1) = lambdas
+        lambdas_str_traj = f&quot;{elec0:.2f}_{vdw0:.2f}_{elec1:.2f}_{vdw1:.2f}&quot;
+        traj = mdtraj.load_dcd(
+            f&quot;./output/{phase}_phase/traj/{lambdas_str_traj}.dcd&quot;,
+            top=topology,
+            stride = 1
+        )
+
+        reduced_u.append([])
+        for xyz, unit_cell_vectors in zip(traj.xyz, traj.unitcell_vectors):
+            simulation.context.setPositions(xyz)
+            simulation.context.setPeriodicBoxVectors(*unit_cell_vectors)
+            u = simulation.context.getState(getEnergy=True).getPotentialEnergy() / kbT
+            reduced_u[-1].append(u)
+
+    reduced_u = np.array(reduced_u)
+
+    print(f&quot;Time taken: {time.time() - start_time}&quot;, flush=True)
+
+    return reduced_u
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>for phase, lambdas in product([&#39;water&#39;, &#39;protein&#39;], lambdas_list):
+    print(f&quot;Computing energies for {phase} phase and lambdas {lambdas}&quot;, flush=True)
+    u = compute_energy(phase, lambdas)
+    os.makedirs(f&quot;./output/{phase}_phase/reduced_potentials&quot;, exist_ok=True)
+    (elec0, vdw0), (elec1, vdw1) = lambdas
+    lambdas_str = f&quot;{elec0:.2f}_{vdw0:.2f}_{elec1:.2f}_{vdw1:.2f}&quot;
+    with open(f&quot;./output/{phase}_phase/reduced_potentials/{lambdas_str}.pkl&quot;, &quot;wb&quot;) as f:
+        pickle.dump(u, f)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Computing energies for water phase and lambdas [(1.0, 1.0), (0.0, 0.0)]
+Computed energies for 1.00_1.00_0.00_0.00
+Computed energies for 0.50_1.00_0.00_0.00
+Computed energies for 0.00_1.00_0.00_0.00
+Computed energies for 0.00_0.90_0.00_0.10
+Computed energies for 0.00_0.70_0.00_0.30
+Computed energies for 0.00_0.50_0.00_0.50
+Computed energies for 0.00_0.30_0.00_0.70
+Computed energies for 0.00_0.10_0.00_0.90
+Computed energies for 0.00_0.00_0.00_1.00
+Computed energies for 0.00_0.00_0.50_1.00
+Computed energies for 0.00_0.00_1.00_1.00
+Time taken: 44.98479080200195
+Computing energies for water phase and lambdas [(0.5, 1.0), (0.0, 0.0)]
+Computed energies for 1.00_1.00_0.00_0.00
+Computed energies for 0.50_1.00_0.00_0.00
+Computed energies for 0.00_1.00_0.00_0.00
+Computed energies for 0.00_0.90_0.00_0.10
+Computed energies for 0.00_0.70_0.00_0.30
+Computed energies for 0.00_0.50_0.00_0.50
+Computed energies for 0.00_0.30_0.00_0.70
+Computed energies for 0.00_0.10_0.00_0.90
+Computed energies for 0.00_0.00_0.00_1.00
+Computed energies for 0.00_0.00_0.50_1.00
+Computed energies for 0.00_0.00_1.00_1.00
+Time taken: 44.45262694358826
+Computing energies for water phase and lambdas [(0.0, 1.0), (0.0, 0.0)]
+Computed energies for 1.00_1.00_0.00_0.00
+Computed energies for 0.50_1.00_0.00_0.00
+Computed energies for 0.00_1.00_0.00_0.00
+Computed energies for 0.00_0.90_0.00_0.10
+Computed energies for 0.00_0.70_0.00_0.30
+Computed energies for 0.00_0.50_0.00_0.50
+Computed energies for 0.00_0.30_0.00_0.70
+Computed energies for 0.00_0.10_0.00_0.90
+Computed energies for 0.00_0.00_0.00_1.00
+Computed energies for 0.00_0.00_0.50_1.00
+Computed energies for 0.00_0.00_1.00_1.00
+Time taken: 48.21069288253784
+Computing energies for water phase and lambdas [(0.0, 0.9), (0.0, 0.1)]
+Computed energies for 1.00_1.00_0.00_0.00
+Computed energies for 0.50_1.00_0.00_0.00
+Computed energies for 0.00_1.00_0.00_0.00
+Computed energies for 0.00_0.90_0.00_0.10
+Computed energies for 0.00_0.70_0.00_0.30
+Computed energies for 0.00_0.50_0.00_0.50
+Computed energies for 0.00_0.30_0.00_0.70
+Computed energies for 0.00_0.10_0.00_0.90
+Computed energies for 0.00_0.00_0.00_1.00
+Computed energies for 0.00_0.00_0.50_1.00
+Computed energies for 0.00_0.00_1.00_1.00
+Time taken: 48.10372233390808
+Computing energies for water phase and lambdas [(0.0, 0.7), (0.0, 0.3)]
+Computed energies for 1.00_1.00_0.00_0.00
+Computed energies for 0.50_1.00_0.00_0.00
+Computed energies for 0.00_1.00_0.00_0.00
+Computed energies for 0.00_0.90_0.00_0.10
+Computed energies for 0.00_0.70_0.00_0.30
+Computed energies for 0.00_0.50_0.00_0.50
+Computed energies for 0.00_0.30_0.00_0.70
+Computed energies for 0.00_0.10_0.00_0.90
+Computed energies for 0.00_0.00_0.00_1.00
+Computed energies for 0.00_0.00_0.50_1.00
+Computed energies for 0.00_0.00_1.00_1.00
+Time taken: 41.52924346923828
+Computing energies for water phase and lambdas [(0.0, 0.5), (0.0, 0.5)]
+Computed energies for 1.00_1.00_0.00_0.00
+Computed energies for 0.50_1.00_0.00_0.00
+Computed energies for 0.00_1.00_0.00_0.00
+Computed energies for 0.00_0.90_0.00_0.10
+Computed energies for 0.00_0.70_0.00_0.30
+Computed energies for 0.00_0.50_0.00_0.50
+Computed energies for 0.00_0.30_0.00_0.70
+Computed energies for 0.00_0.10_0.00_0.90
+Computed energies for 0.00_0.00_0.00_1.00
+Computed energies for 0.00_0.00_0.50_1.00
+Computed energies for 0.00_0.00_1.00_1.00
+Time taken: 44.20679259300232
+Computing energies for water phase and lambdas [(0.0, 0.3), (0.0, 0.7)]
+Computed energies for 1.00_1.00_0.00_0.00
+Computed energies for 0.50_1.00_0.00_0.00
+Computed energies for 0.00_1.00_0.00_0.00
+Computed energies for 0.00_0.90_0.00_0.10
+Computed energies for 0.00_0.70_0.00_0.30
+Computed energies for 0.00_0.50_0.00_0.50
+Computed energies for 0.00_0.30_0.00_0.70
+Computed energies for 0.00_0.10_0.00_0.90
+Computed energies for 0.00_0.00_0.00_1.00
+Computed energies for 0.00_0.00_0.50_1.00
+Computed energies for 0.00_0.00_1.00_1.00
+Time taken: 41.45137667655945
+Computing energies for water phase and lambdas [(0.0, 0.1), (0.0, 0.9)]
+Computed energies for 1.00_1.00_0.00_0.00
+Computed energies for 0.50_1.00_0.00_0.00
+Computed energies for 0.00_1.00_0.00_0.00
+Computed energies for 0.00_0.90_0.00_0.10
+Computed energies for 0.00_0.70_0.00_0.30
+Computed energies for 0.00_0.50_0.00_0.50
+Computed energies for 0.00_0.30_0.00_0.70
+Computed energies for 0.00_0.10_0.00_0.90
+Computed energies for 0.00_0.00_0.00_1.00
+Computed energies for 0.00_0.00_0.50_1.00
+Computed energies for 0.00_0.00_1.00_1.00
+Time taken: 43.72213816642761
+Computing energies for water phase and lambdas [(0.0, 0.0), (0.0, 1.0)]
+Computed energies for 1.00_1.00_0.00_0.00
+Computed energies for 0.50_1.00_0.00_0.00
+Computed energies for 0.00_1.00_0.00_0.00
+Computed energies for 0.00_0.90_0.00_0.10
+Computed energies for 0.00_0.70_0.00_0.30
+Computed energies for 0.00_0.50_0.00_0.50
+Computed energies for 0.00_0.30_0.00_0.70
+Computed energies for 0.00_0.10_0.00_0.90
+Computed energies for 0.00_0.00_0.00_1.00
+Computed energies for 0.00_0.00_0.50_1.00
+Computed energies for 0.00_0.00_1.00_1.00
+Time taken: 45.57198119163513
+Computing energies for water phase and lambdas [(0.0, 0.0), (0.5, 1.0)]
+Computed energies for 1.00_1.00_0.00_0.00
+Computed energies for 0.50_1.00_0.00_0.00
+Computed energies for 0.00_1.00_0.00_0.00
+Computed energies for 0.00_0.90_0.00_0.10
+Computed energies for 0.00_0.70_0.00_0.30
+Computed energies for 0.00_0.50_0.00_0.50
+Computed energies for 0.00_0.30_0.00_0.70
+Computed energies for 0.00_0.10_0.00_0.90
+Computed energies for 0.00_0.00_0.00_1.00
+Computed energies for 0.00_0.00_0.50_1.00
+Computed energies for 0.00_0.00_1.00_1.00
+Time taken: 42.768394470214844
+Computing energies for water phase and lambdas [(0.0, 0.0), (1.0, 1.0)]
+Computed energies for 1.00_1.00_0.00_0.00
+Computed energies for 0.50_1.00_0.00_0.00
+Computed energies for 0.00_1.00_0.00_0.00
+Computed energies for 0.00_0.90_0.00_0.10
+Computed energies for 0.00_0.70_0.00_0.30
+Computed energies for 0.00_0.50_0.00_0.50
+Computed energies for 0.00_0.30_0.00_0.70
+Computed energies for 0.00_0.10_0.00_0.90
+Computed energies for 0.00_0.00_0.00_1.00
+Computed energies for 0.00_0.00_0.50_1.00
+Computed energies for 0.00_0.00_1.00_1.00
+Time taken: 39.2794075012207
+Computing energies for protein phase and lambdas [(1.0, 1.0), (0.0, 0.0)]
+Computed energies for 1.00_1.00_0.00_0.00
+Computed energies for 0.50_1.00_0.00_0.00
+Computed energies for 0.00_1.00_0.00_0.00
+Computed energies for 0.00_0.90_0.00_0.10
+Computed energies for 0.00_0.70_0.00_0.30
+Computed energies for 0.00_0.50_0.00_0.50
+Computed energies for 0.00_0.30_0.00_0.70
+Computed energies for 0.00_0.10_0.00_0.90
+Computed energies for 0.00_0.00_0.00_1.00
+Computed energies for 0.00_0.00_0.50_1.00
+Computed energies for 0.00_0.00_1.00_1.00
+Time taken: 322.8405816555023
+Computing energies for protein phase and lambdas [(0.5, 1.0), (0.0, 0.0)]
+Computed energies for 1.00_1.00_0.00_0.00
+Computed energies for 0.50_1.00_0.00_0.00
+Computed energies for 0.00_1.00_0.00_0.00
+Computed energies for 0.00_0.90_0.00_0.10
+Computed energies for 0.00_0.70_0.00_0.30
+Computed energies for 0.00_0.50_0.00_0.50
+Computed energies for 0.00_0.30_0.00_0.70
+Computed energies for 0.00_0.10_0.00_0.90
+Computed energies for 0.00_0.00_0.00_1.00
+Computed energies for 0.00_0.00_0.50_1.00
+Computed energies for 0.00_0.00_1.00_1.00
+Time taken: 311.61050605773926
+Computing energies for protein phase and lambdas [(0.0, 1.0), (0.0, 0.0)]
+Computed energies for 1.00_1.00_0.00_0.00
+Computed energies for 0.50_1.00_0.00_0.00
+Computed energies for 0.00_1.00_0.00_0.00
+Computed energies for 0.00_0.90_0.00_0.10
+Computed energies for 0.00_0.70_0.00_0.30
+Computed energies for 0.00_0.50_0.00_0.50
+Computed energies for 0.00_0.30_0.00_0.70
+Computed energies for 0.00_0.10_0.00_0.90
+Computed energies for 0.00_0.00_0.00_1.00
+Computed energies for 0.00_0.00_0.50_1.00
+Computed energies for 0.00_0.00_1.00_1.00
+Time taken: 342.73623418807983
+Computing energies for protein phase and lambdas [(0.0, 0.9), (0.0, 0.1)]
+Computed energies for 1.00_1.00_0.00_0.00
+Computed energies for 0.50_1.00_0.00_0.00
+Computed energies for 0.00_1.00_0.00_0.00
+Computed energies for 0.00_0.90_0.00_0.10
+Computed energies for 0.00_0.70_0.00_0.30
+Computed energies for 0.00_0.50_0.00_0.50
+Computed energies for 0.00_0.30_0.00_0.70
+Computed energies for 0.00_0.10_0.00_0.90
+Computed energies for 0.00_0.00_0.00_1.00
+Computed energies for 0.00_0.00_0.50_1.00
+Computed energies for 0.00_0.00_1.00_1.00
+Time taken: 343.49404764175415
+Computing energies for protein phase and lambdas [(0.0, 0.7), (0.0, 0.3)]
+Computed energies for 1.00_1.00_0.00_0.00
+Computed energies for 0.50_1.00_0.00_0.00
+Computed energies for 0.00_1.00_0.00_0.00
+Computed energies for 0.00_0.90_0.00_0.10
+Computed energies for 0.00_0.70_0.00_0.30
+Computed energies for 0.00_0.50_0.00_0.50
+Computed energies for 0.00_0.30_0.00_0.70
+Computed energies for 0.00_0.10_0.00_0.90
+Computed energies for 0.00_0.00_0.00_1.00
+Computed energies for 0.00_0.00_0.50_1.00
+Computed energies for 0.00_0.00_1.00_1.00
+Time taken: 286.67842268943787
+Computing energies for protein phase and lambdas [(0.0, 0.5), (0.0, 0.5)]
+Computed energies for 1.00_1.00_0.00_0.00
+Computed energies for 0.50_1.00_0.00_0.00
+Computed energies for 0.00_1.00_0.00_0.00
+Computed energies for 0.00_0.90_0.00_0.10
+Computed energies for 0.00_0.70_0.00_0.30
+Computed energies for 0.00_0.50_0.00_0.50
+Computed energies for 0.00_0.30_0.00_0.70
+Computed energies for 0.00_0.10_0.00_0.90
+Computed energies for 0.00_0.00_0.00_1.00
+Computed energies for 0.00_0.00_0.50_1.00
+Computed energies for 0.00_0.00_1.00_1.00
+Time taken: 310.02947068214417
+Computing energies for protein phase and lambdas [(0.0, 0.3), (0.0, 0.7)]
+Computed energies for 1.00_1.00_0.00_0.00
+Computed energies for 0.50_1.00_0.00_0.00
+Computed energies for 0.00_1.00_0.00_0.00
+Computed energies for 0.00_0.90_0.00_0.10
+Computed energies for 0.00_0.70_0.00_0.30
+Computed energies for 0.00_0.50_0.00_0.50
+Computed energies for 0.00_0.30_0.00_0.70
+Computed energies for 0.00_0.10_0.00_0.90
+Computed energies for 0.00_0.00_0.00_1.00
+Computed energies for 0.00_0.00_0.50_1.00
+Computed energies for 0.00_0.00_1.00_1.00
+Time taken: 336.2831313610077
+Computing energies for protein phase and lambdas [(0.0, 0.1), (0.0, 0.9)]
+Computed energies for 1.00_1.00_0.00_0.00
+Computed energies for 0.50_1.00_0.00_0.00
+Computed energies for 0.00_1.00_0.00_0.00
+Computed energies for 0.00_0.90_0.00_0.10
+Computed energies for 0.00_0.70_0.00_0.30
+Computed energies for 0.00_0.50_0.00_0.50
+Computed energies for 0.00_0.30_0.00_0.70
+Computed energies for 0.00_0.10_0.00_0.90
+Computed energies for 0.00_0.00_0.00_1.00
+Computed energies for 0.00_0.00_0.50_1.00
+Computed energies for 0.00_0.00_1.00_1.00
+Time taken: 283.1235764026642
+Computing energies for protein phase and lambdas [(0.0, 0.0), (0.0, 1.0)]
+Computed energies for 1.00_1.00_0.00_0.00
+Computed energies for 0.50_1.00_0.00_0.00
+Computed energies for 0.00_1.00_0.00_0.00
+Computed energies for 0.00_0.90_0.00_0.10
+Computed energies for 0.00_0.70_0.00_0.30
+Computed energies for 0.00_0.50_0.00_0.50
+Computed energies for 0.00_0.30_0.00_0.70
+Computed energies for 0.00_0.10_0.00_0.90
+Computed energies for 0.00_0.00_0.00_1.00
+Computed energies for 0.00_0.00_0.50_1.00
+Computed energies for 0.00_0.00_1.00_1.00
+Time taken: 310.94855785369873
+Computing energies for protein phase and lambdas [(0.0, 0.0), (0.5, 1.0)]
+Computed energies for 1.00_1.00_0.00_0.00
+Computed energies for 0.50_1.00_0.00_0.00
+Computed energies for 0.00_1.00_0.00_0.00
+Computed energies for 0.00_0.90_0.00_0.10
+Computed energies for 0.00_0.70_0.00_0.30
+Computed energies for 0.00_0.50_0.00_0.50
+Computed energies for 0.00_0.30_0.00_0.70
+Computed energies for 0.00_0.10_0.00_0.90
+Computed energies for 0.00_0.00_0.00_1.00
+Computed energies for 0.00_0.00_0.50_1.00
+Computed energies for 0.00_0.00_1.00_1.00
+Time taken: 310.10249614715576
+Computing energies for protein phase and lambdas [(0.0, 0.0), (1.0, 1.0)]
+Computed energies for 1.00_1.00_0.00_0.00
+Computed energies for 0.50_1.00_0.00_0.00
+Computed energies for 0.00_1.00_0.00_0.00
+Computed energies for 0.00_0.90_0.00_0.10
+Computed energies for 0.00_0.70_0.00_0.30
+Computed energies for 0.00_0.50_0.00_0.50
+Computed energies for 0.00_0.30_0.00_0.70
+Computed energies for 0.00_0.10_0.00_0.90
+Computed energies for 0.00_0.00_0.00_1.00
+Computed energies for 0.00_0.00_0.50_1.00
+Computed energies for 0.00_0.00_1.00_1.00
+Time taken: 282.6125600337982
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>## read potential energy
+deltaF = {}
+for phase in [&quot;water&quot;, &quot;protein&quot;]:
+    us = []
+    for lambdas in lambdas_list:
+        (elec0, vdw0), (elec1, vdw1) = lambdas
+        lambdas_str = f&quot;{elec0:.2f}_{vdw0:.2f}_{elec1:.2f}_{vdw1:.2f}&quot;
+
+        with open(
+            f&quot;./output/{phase}_phase/reduced_potentials/{lambdas_str}.pkl&quot;,
+            &quot;rb&quot;,
+        ) as f:
+            u = pickle.load(f)
+            u = u.reshape(-1)
+            us.append(u)
+    us = np.array(us)
+
+    num_conf = np.array([us.shape[1] // us.shape[0] for _ in range(us.shape[0])])
+    fastmbar = FastMBAR(us, num_conf, verbose=True, method=&quot;L-BFGS-B&quot;)
+    kbT = 298.15 * unit.kelvin * unit.BOLTZMANN_CONSTANT_kB * unit.AVOGADRO_CONSTANT_NA
+    kbT = kbT.value_in_unit(unit.kilocalorie_per_mole)
+    deltaF[phase] = fastmbar.DeltaF[0, -1].item()*kbT
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+RUNNING THE L-BFGS-B CODE
+
+           * * *
+
+Machine precision = 2.220D-16
+ N =           10     M =           10
+
+At X0         0 variables are exactly at the bounds
+
+At iterate    0    f=  3.80788D+04    |proj g|=  1.58422D-01
+
+At iterate    1    f=  3.80776D+04    |proj g|=  7.61257D-02
+
+At iterate    2    f=  3.80755D+04    |proj g|=  7.88632D-02
+
+At iterate    3    f=  3.80710D+04    |proj g|=  9.07229D-02
+
+At iterate    4    f=  3.80640D+04    |proj g|=  9.09091D-02
+
+At iterate    5    f=  3.80638D+04    |proj g|=  1.02706D-01
+
+At iterate    6    f=  3.80636D+04    |proj g|=  1.30909D-01
+
+At iterate    7    f=  3.80631D+04    |proj g|=  9.09091D-02
+
+At iterate    8    f=  3.80618D+04    |proj g|=  1.36179D-01
+
+At iterate    9    f=  3.80609D+04    |proj g|=  1.19421D-01
+
+At iterate   10    f=  3.80605D+04    |proj g|=  9.56204D-02
+
+At iterate   11    f=  3.80603D+04    |proj g|=  8.84397D-02
+
+At iterate   12    f=  3.80600D+04    |proj g|=  8.58838D-02
+
+At iterate   13    f=  3.80598D+04    |proj g|=  7.94357D-02
+
+At iterate   14    f=  3.80597D+04    |proj g|=  2.55724D-02
+
+At iterate   15    f=  3.80596D+04    |proj g|=  1.45894D-02
+
+At iterate   16    f=  3.80596D+04    |proj g|=  1.16069D-02
+
+At iterate   17    f=  3.80596D+04    |proj g|=  8.46321D-03
+
+At iterate   18    f=  3.80596D+04    |proj g|=  1.36087D-03
+
+At iterate   19    f=  3.80596D+04    |proj g|=  8.56339D-04
+
+At iterate   20    f=  3.80596D+04    |proj g|=  1.44203D-04
+
+At iterate   21    f=  3.80596D+04    |proj g|=  1.20593D-04
+
+At iterate   22    f=  3.80596D+04    |proj g|=  1.75085D-04
+
+At iterate   23    f=  3.80596D+04    |proj g|=  7.82882D-05
+
+At iterate   24    f=  3.80596D+04    |proj g|=  8.66152D-06
+
+At iterate   25    f=  3.80596D+04    |proj g|=  3.44367D-06
+
+           * * *
+
+Tit   = total number of iterations
+Tnf   = total number of function evaluations
+Tnint = total number of segments explored during Cauchy searches
+Skip  = number of BFGS updates skipped
+Nact  = number of active bounds at final generalized Cauchy point
+Projg = norm of the final projected gradient
+F     = final function value
+
+           * * *
+
+   N    Tit     Tnf  Tnint  Skip  Nact     Projg        F
+   10     25     33      1     0     0   3.444D-06   3.806D+04
+  F =   38059.636397855786
+
+CONVERGENCE: REL_REDUCTION_OF_F_&lt;=_FACTR*EPSMCH
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+ This problem is unconstrained.
+ This problem is unconstrained.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+RUNNING THE L-BFGS-B CODE
+
+           * * *
+
+Machine precision = 2.220D-16
+ N =           10     M =           10
+
+At X0         0 variables are exactly at the bounds
+
+At iterate    0    f=  3.10728D+05    |proj g|=  1.49601D-01
+
+At iterate    1    f=  3.10728D+05    |proj g|=  1.33000D-01
+
+At iterate    2    f=  3.10726D+05    |proj g|=  8.44995D-02
+
+At iterate    3    f=  3.10723D+05    |proj g|=  8.96321D-02
+
+At iterate    4    f=  3.10713D+05    |proj g|=  1.20753D-01
+
+At iterate    5    f=  3.10713D+05    |proj g|=  1.49063D-01
+
+At iterate    6    f=  3.10712D+05    |proj g|=  9.09091D-02
+
+At iterate    7    f=  3.10711D+05    |proj g|=  1.67054D-01
+
+At iterate    8    f=  3.10711D+05    |proj g|=  1.43710D-01
+
+At iterate    9    f=  3.10711D+05    |proj g|=  9.09091D-02
+
+At iterate   10    f=  3.10709D+05    |proj g|=  9.07550D-02
+
+At iterate   11    f=  3.10709D+05    |proj g|=  9.04509D-02
+
+At iterate   12    f=  3.10708D+05    |proj g|=  2.26355D-01
+
+At iterate   13    f=  3.10708D+05    |proj g|=  2.53382D-01
+
+At iterate   14    f=  3.10708D+05    |proj g|=  8.58040D-02
+
+At iterate   15    f=  3.10708D+05    |proj g|=  6.27178D-02
+
+At iterate   16    f=  3.10708D+05    |proj g|=  3.17392D-02
+
+At iterate   17    f=  3.10708D+05    |proj g|=  1.59677D-02
+
+At iterate   18    f=  3.10708D+05    |proj g|=  8.54716D-03
+
+At iterate   19    f=  3.10708D+05    |proj g|=  4.70591D-03
+
+At iterate   20    f=  3.10708D+05    |proj g|=  3.80565D-03
+
+At iterate   21    f=  3.10708D+05    |proj g|=  1.62050D-03
+
+At iterate   22    f=  3.10708D+05    |proj g|=  7.37465D-04
+
+At iterate   23    f=  3.10708D+05    |proj g|=  3.34689D-04
+
+At iterate   24    f=  3.10708D+05    |proj g|=  6.27430D-05
+
+At iterate   25    f=  3.10708D+05    |proj g|=  1.83073D-05
+
+           * * *
+
+Tit   = total number of iterations
+Tnf   = total number of function evaluations
+Tnint = total number of segments explored during Cauchy searches
+Skip  = number of BFGS updates skipped
+Nact  = number of active bounds at final generalized Cauchy point
+Projg = norm of the final projected gradient
+F     = final function value
+
+           * * *
+
+   N    Tit     Tnf  Tnint  Skip  Nact     Projg        F
+   10     25     30      1     0     0   1.831D-05   3.107D+05
+  F =   310707.65669835021
+
+CONVERGENCE: REL_REDUCTION_OF_F_&lt;=_FACTR*EPSMCH
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ddF = deltaF[&#39;protein&#39;] - deltaF[&#39;water&#39;]
+print(f&quot;ddG: {ddF:.2f} kcal/mol&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+ddG: 0.98 kcal/mol
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>kbT
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[30]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+0.592484949713764
+</pre></div></div>
+</div>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../relative-hydration-free-energy-benzene-phenol/main.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Relative hydration free energy between benzene and phenol</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../../API.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">API</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Xinqiang Ding
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, Xinqiang Ding.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

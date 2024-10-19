@@ -1,0 +1,860 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Relative hydration free energy between benzene and phenol &#8212; atom 0.0.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=5db94ae7"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/relative-hydration-free-energy-benzene-phenol/main';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Computing relative binding free energies with an alchemical approach" href="../relative-binding-free-energy-protein-ligand/main.html" />
+    <link rel="prev" title="Examples" href="../../examples.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/logo.png" class="logo__image only-light" alt="atom 0.0.0 documentation - Home"/>
+    <script>document.write(`<img src="../../_static/logo.png" class="logo__image only-dark" alt="atom 0.0.0 documentation - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../examples.html">Examples</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Relative hydration free energy between benzene and phenol</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../relative-binding-free-energy-protein-ligand/main.html">Computing relative binding free energies with an alchemical approach</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../../API.html">API</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/DingGroup/atom" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/examples/relative-hydration-free-energy-benzene-phenol/main.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Relative hydration free energy between benzene and phenol</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="Relative-hydration-free-energy-between-benzene-and-phenol">
+<h1>Relative hydration free energy between benzene and phenol<a class="headerlink" href="#Relative-hydration-free-energy-between-benzene-and-phenol" title="Link to this heading">#</a></h1>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import os
+import pickle
+from itertools import product
+import time
+import openmm as mm
+import openmm.app as app
+import openmm.unit as unit
+from openmm import XmlSerializer
+import numpy as np
+import mdtraj
+import xml.etree.ElementTree as ET
+from FastMBAR import FastMBAR
+from openatom import (
+    compute_mcs_VF2,
+    make_graph,
+    align_coordinates,
+    make_alchemical_system,
+    make_psf_from_topology,
+)
+</pre></div>
+</div>
+</div>
+<p>Most molecular dynamics software packages including OpenMM provides tools to setup physical systems for simulations. However, in alchemical free energy calculations, physical systems are modified using alchemical transformations which yields systems that are not physical such as systems corresponding to the intermediate states of the transformation. The package <code class="docutils literal notranslate"><span class="pre">atom</span></code> provides tools to setup alchemical systems for simulations.</p>
+<p>In this notebook, we will use <code class="docutils literal notranslate"><span class="pre">atom</span></code> to setup alchemical systems for computing the relative hydration free energy between benzene and phenol. First, we will tools provided in <code class="docutils literal notranslate"><span class="pre">openmm</span></code> to make three systems: benzene in vacuum, phenol in vacuum, a water box.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>## Make an openmm system for the environment based on the prmtop file
+## The environment is a solvent box
+envi_prmtop = app.AmberPrmtopFile(&quot;./structures/solvent.prmtop&quot;)
+envi_system = envi_prmtop.createSystem(
+    nonbondedMethod=app.PME,
+    nonbondedCutoff=1.0 * unit.nanometer,
+    constraints=app.HBonds,
+    switchDistance=0.9 * unit.nanometer,
+)
+
+## Topology and coordinates of the environment
+envi_top = envi_prmtop.topology
+envi_coor = app.AmberInpcrdFile(&quot;./structures/solvent.inpcrd&quot;).getPositions()
+envi_coor = np.array(envi_coor.value_in_unit(unit.nanometer))
+
+
+## Make an openmm system for benzene
+## Note that we use the same periodic box vectors as the environment
+liga_prmtop = app.AmberPrmtopFile(
+    &quot;./structures/BNZ.prmtop&quot;, envi_top.getPeriodicBoxVectors()
+)
+liga_system = liga_prmtop.createSystem(
+    nonbondedMethod=app.PME,
+    nonbondedCutoff=1.0 * unit.nanometer,
+    constraints=app.HBonds,
+    switchDistance=0.9 * unit.nanometer,
+)
+
+## Topology and coordinates of benzene
+liga_top = liga_prmtop.topology
+liga_coor = app.AmberInpcrdFile(&quot;./structures/BNZ.inpcrd&quot;).getPositions()
+liga_coor = np.array(liga_coor.value_in_unit(unit.nanometer))
+
+
+## Make an openmm system for phenol
+## Make sure that we use the same periodic box vectors as the environment
+ligb_prmtop = app.AmberPrmtopFile(
+    &quot;./structures/IPH.prmtop&quot;, envi_top.getPeriodicBoxVectors()
+)
+ligb_system = ligb_prmtop.createSystem(
+    nonbondedMethod=app.PME,
+    nonbondedCutoff=1.0 * unit.nanometer,
+    constraints=app.HBonds,
+    switchDistance=0.9 * unit.nanometer,
+)
+
+## Topology and coordinates of phenol
+ligb_top = ligb_prmtop.topology
+ligb_coor = app.AmberInpcrdFile(&quot;./structures/IPH.inpcrd&quot;).getPositions()
+ligb_coor = np.array(ligb_coor.value_in_unit(unit.nanometer))
+</pre></div>
+</div>
+</div>
+<p>Using the three systems of benzene in vacuum, phenol in vacuum, and a water box, we will setup alchemical systems for benzene and phenol in water.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>## Serialize the systems to xml.
+## `atom` creates alchemical systems by manipulating the xml representation of the systems
+envi_xml = XmlSerializer.serializeSystem(envi_system)
+liga_xml = XmlSerializer.serializeSystem(liga_system)
+ligb_xml = XmlSerializer.serializeSystem(ligb_system)
+
+
+envi = ET.fromstring(envi_xml)
+liga = ET.fromstring(liga_xml)
+ligb = ET.fromstring(ligb_xml)
+ligs = [liga, ligb]
+
+## compute the maximum common substructure between benzene and phenol using VF2 algorithm
+mcs = compute_mcs_VF2(liga_top, ligb_top, timeout=30)
+
+liga_common_atoms = list(mcs.keys())
+ligb_common_atoms = [mcs[i] for i in liga_common_atoms]
+ligs_common_atoms = [liga_common_atoms, ligb_common_atoms]
+
+graphs = [make_graph(liga_top), make_graph(ligb_top)]
+
+
+ligb_coor = align_coordinates(
+    liga_coor, ligb_coor, liga_common_atoms, ligb_common_atoms
+)
+
+ligs_coor = [liga_coor, ligb_coor]
+
+lambdas_list = [
+    [(1.0, 1.0), (0.0, 0.0)],
+    [(0.5, 1.0), (0.0, 0.0)],
+    [(0.0, 1.0), (0.0, 0.0)],
+    [(0.0, 0.8), (0.0, 0.2)],
+    [(0.0, 0.6), (0.0, 0.4)],
+    [(0.0, 0.4), (0.0, 0.6)],
+    [(0.0, 0.2), (0.0, 0.8)],
+    [(0.0, 0.0), (0.0, 1.0)],
+    [(0.0, 0.0), (0.5, 1.0)],
+    [(0.0, 0.0), (1.0, 1.0)],
+]
+
+for phase in [&quot;vacuum&quot;, &quot;water&quot;]:
+    os.makedirs(f&quot;./output/{phase}_phase&quot;, exist_ok=True)
+    with open(f&quot;./output/{phase}_phase/lambdas.pkl&quot;, &quot;wb&quot;) as f:
+        pickle.dump(lambdas_list, f)
+
+    for lambdas in lambdas_list:
+        if phase == &quot;vacuum&quot;:
+            system_xml, top, coor = make_alchemical_system(
+                ligs,
+                [liga_top, ligb_top],
+                ligs_common_atoms,
+                ligs_coor,
+                lambdas,
+                None,
+                None,
+                None,
+            )
+        else:
+            system_xml, top, coor = make_alchemical_system(
+                ligs,
+                [liga_top, ligb_top],
+                ligs_common_atoms,
+                ligs_coor,
+                lambdas,
+                envi,
+                envi_top,
+                envi_coor,
+            )
+
+        tree = ET.ElementTree(system_xml)
+        ET.indent(tree.getroot())
+        (elec0, vdw0), (elec1, vdw1) = lambdas
+        os.makedirs(f&quot;./output/{phase}_phase/sys&quot;, exist_ok=True)
+        tree.write(
+            f&quot;./output/{phase}_phase/sys/{elec0:.2f}_{vdw0:.2f}_{elec1:.2f}_{vdw1:.2f}.xml&quot;,
+            xml_declaration=True,
+            method=&quot;xml&quot;,
+            encoding=&quot;utf-8&quot;,
+        )
+
+        app.PDBFile.writeFile(
+            top, coor * 10, f&quot;./output/{phase}_phase/system.pdb&quot;, keepIds=True
+        )
+
+        with open(f&quot;./output/{phase}_phase/topology.pkl&quot;, &quot;wb&quot;) as file_handle:
+            pickle.dump(top, file_handle)
+
+        make_psf_from_topology(top, f&quot;./output/{phase}_phase/topology.psf&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>for phase, lambdas in product([&quot;water&quot;, &quot;vacuum&quot;], lambdas_list):
+    (elec0, vdw0), (elec1, vdw1) = lambdas
+    lambdas_str = f&quot;{elec0:.2f}_{vdw0:.2f}_{elec1:.2f}_{vdw1:.2f}&quot;
+    print(f&quot;Running simulation for lambdas {lambdas_str} in {phase}&quot;, flush=True)
+
+    ## deserialize the system
+    with open(
+        f&quot;./output/{phase}_phase/sys/{elec0:.2f}_{vdw0:.2f}_{elec1:.2f}_{vdw1:.2f}.xml&quot;,
+        &quot;r&quot;,
+    ) as f:
+        system = XmlSerializer.deserialize(f.read())
+
+    ## add barostat
+    if phase == &quot;water&quot;:
+        system.addForce(mm.MonteCarloBarostat(1 * unit.atmospheres, 298.15 * unit.kelvin))
+
+    with open(f&quot;./output/{phase}_phase/topology.pkl&quot;, &quot;rb&quot;) as f:
+        topology = pickle.load(f)
+
+    pdb = app.PDBFile(f&quot;./output/{phase}_phase/system.pdb&quot;)
+
+    integrator = mm.LangevinMiddleIntegrator(
+        298.15 * unit.kelvin, 1.0 / unit.picosecond, 0.002 * unit.picoseconds
+    )
+    platform = mm.Platform.getPlatformByName(&quot;CPU&quot;)
+    simulation = app.Simulation(topology, system, integrator, platform)
+    simulation.context.setPositions(pdb.positions)
+
+    print(&quot;Minimizing energy ...&quot;, flush=True)
+    simulation.minimizeEnergy()
+
+    print(&quot;Equilibrating ...&quot;, flush=True)
+    simulation.integrator.setStepSize(0.002 * unit.picoseconds)
+    for T in np.linspace(50, 298.15, 5):
+        integrator.setTemperature(T * unit.kelvin)
+        simulation.context.setVelocitiesToTemperature(T * unit.kelvin)
+        simulation.step(1_000)
+    simulation.integrator.setStepSize(0.002 * unit.picoseconds)
+
+    os.makedirs(f&quot;./output/{phase}_phase/traj&quot;, exist_ok=True)
+    simulation.reporters.append(
+        app.DCDReporter(f&quot;./output/{phase}_phase/traj/{lambdas_str}.dcd&quot;, 500)
+    )
+
+    print(&quot;Production run ...&quot;, flush=True)
+    start_time = time.time()
+    simulation.step(100_000)
+
+    simulation.saveCheckpoint(f&quot;./output/{phase}_phase/traj/{lambdas_str}.chk&quot;)
+    print(f&quot;Simulation finished in {time.time() - start_time:.2f} seconds&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>def compute_energy(phase, lambdas):
+    (elec0, vdw0), (elec1, vdw1) = lambdas
+
+    ## deserialize the system
+    with open(
+        f&quot;./output/{phase}_phase/sys/{elec0:.2f}_{vdw0:.2f}_{elec1:.2f}_{vdw1:.2f}.xml&quot;,
+        &quot;r&quot;,
+    ) as f:
+        system = mm.XmlSerializer.deserialize(f.read())
+
+    ## add barostat
+    if phase == &quot;water&quot;:
+        system.addForce(mm.MonteCarloBarostat(1 * unit.atmospheres, 298.15 * unit.kelvin))
+
+    with open(f&quot;./output/{phase}_phase/topology.pkl&quot;, &quot;rb&quot;) as f:
+        topology = pickle.load(f)
+    topology = mdtraj.Topology.from_openmm(topology)
+
+    integrator = mm.LangevinMiddleIntegrator(
+        298.15 * unit.kelvin, 1.0 / unit.picosecond, 0.002 * unit.picoseconds
+    )
+    kbT = 298.15 * unit.kelvin * unit.BOLTZMANN_CONSTANT_kB * unit.AVOGADRO_CONSTANT_NA
+
+    platform = mm.Platform.getPlatformByName(&quot;CPU&quot;)
+    simulation = app.Simulation(topology, system, integrator, platform)
+
+    ## load trajectories
+    reduced_u = []
+    for lambdas in lambdas_list:
+        (elec0, vdw0), (elec1, vdw1) = lambdas
+        lambdas_str_traj = f&quot;{elec0:.2f}_{vdw0:.2f}_{elec1:.2f}_{vdw1:.2f}&quot;
+        traj = mdtraj.load(
+            f&quot;./output/{phase}_phase/traj/{lambdas_str_traj}.dcd&quot;,
+            top=topology,
+        )
+
+        for xyz, unit_cell_vectors in zip(traj.xyz, traj.unitcell_vectors):
+            simulation.context.setPositions(xyz)
+            simulation.context.setPeriodicBoxVectors(*unit_cell_vectors)
+            u = simulation.context.getState(getEnergy=True).getPotentialEnergy() / kbT
+            reduced_u.append(u)
+
+
+    reduced_u = np.array(reduced_u)
+    return reduced_u
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>reduced_u = {&#39;water&#39;: [], &#39;vacuum&#39;: []}
+for phase, lambdas in product([&quot;water&quot;, &quot;vacuum&quot;], lambdas_list):
+    u = compute_energy(phase, lambdas)
+    reduced_u[phase].append(u)
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>Fs = {}
+for phase in [&quot;water&quot;, &quot;vacuum&quot;]:
+    reduced_u[phase] = np.array(reduced_u[phase])
+    u = reduced_u[phase]
+    num_confs = np.array([u.shape[1]//u.shape[0] ] * u.shape[0])
+
+    fastmbar = FastMBAR(u, num_confs, cuda=False, verbose=True, method=&quot;L-BFGS-B&quot;)
+
+    kbT = 298.15 * unit.kelvin * unit.BOLTZMANN_CONSTANT_kB * unit.AVOGADRO_CONSTANT_NA
+    kbT = kbT.value_in_unit(unit.kilocalorie_per_mole)
+    Fs[phase] = fastmbar.F * kbT
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+RUNNING THE L-BFGS-B CODE
+
+           * * *
+
+Machine precision = 2.220D-16
+ N =            9     M =           10
+
+At X0         0 variables are exactly at the bounds
+
+At iterate    0    f=  2.53565D+04    |proj g|=  3.95190D-02
+
+At iterate    1    f=  2.53565D+04    |proj g|=  2.34843D-02
+
+At iterate    2    f=  2.53565D+04    |proj g|=  1.22252D-02
+
+At iterate    3    f=  2.53565D+04    |proj g|=  1.48162D-02
+
+At iterate    4    f=  2.53565D+04    |proj g|=  3.65543D-03
+
+At iterate    5    f=  2.53565D+04    |proj g|=  1.90132D-03
+
+At iterate    6    f=  2.53565D+04    |proj g|=  2.94191D-03
+
+At iterate    7    f=  2.53565D+04    |proj g|=  1.73517D-03
+
+At iterate    8    f=  2.53565D+04    |proj g|=  3.38425D-04
+
+At iterate    9    f=  2.53565D+04    |proj g|=  2.63662D-05
+
+At iterate   10    f=  2.53565D+04    |proj g|=  4.37878D-06
+
+           * * *
+
+Tit   = total number of iterations
+Tnf   = total number of function evaluations
+Tnint = total number of segments explored during Cauchy searches
+Skip  = number of BFGS updates skipped
+Nact  = number of active bounds at final generalized Cauchy point
+Projg = norm of the final projected gradient
+F     = final function value
+
+           * * *
+
+   N    Tit     Tnf  Tnint  Skip  Nact     Projg        F
+    9     10     12      1     0     0   4.379D-06   2.536D+04
+  F =   25356.460671774770
+
+CONVERGENCE: REL_REDUCTION_OF_F_&lt;=_FACTR*EPSMCH
+RUNNING THE L-BFGS-B CODE
+
+           * * *
+
+Machine precision = 2.220D-16
+ N =            9     M =           10
+
+At X0         0 variables are exactly at the bounds
+
+At iterate    0    f=  3.50832D+00    |proj g|=  8.64228D-12
+
+           * * *
+
+Tit   = total number of iterations
+Tnf   = total number of function evaluations
+Tnint = total number of segments explored during Cauchy searches
+Skip  = number of BFGS updates skipped
+Nact  = number of active bounds at final generalized Cauchy point
+Projg = norm of the final projected gradient
+F     = final function value
+
+           * * *
+
+   N    Tit     Tnf  Tnint  Skip  Nact     Projg        F
+    9      0      1      0     0     0   8.642D-12   3.508D+00
+  F =   3.5083168079168461
+
+CONVERGENCE: NORM_OF_PROJECTED_GRADIENT_&lt;=_PGTOL
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+ This problem is unconstrained.
+ This problem is unconstrained.
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>F_water = Fs[&quot;water&quot;]
+F_vacuum = Fs[&quot;vacuum&quot;]
+
+dF_water = F_water[-1] - F_water[0]
+dF_vacuum = F_vacuum[-1] - F_vacuum[0]
+
+dF = dF_water - dF_vacuum
+print(f&quot;Free energy difference: {dF:.2f} kcal/mol&quot;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Free energy difference: -4.79 kcal/mol
+</pre></div></div>
+</div>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../../examples.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Examples</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../relative-binding-free-energy-protein-ligand/main.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Computing relative binding free energies with an alchemical approach</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Xinqiang Ding
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, Xinqiang Ding.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
