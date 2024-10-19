@@ -2,6 +2,19 @@ import os
 import time
 
 def make_psf_from_topology(topology, psf_file_name):
+    """
+    Write a PSF file from a topology object.
+
+    Args:
+        topology (openmm.app.Topology): The topology object.
+        psf_file_name (str): The name of the PSF file.    
+
+    Returns:
+        None
+        
+    """
+
+
     file_handle = open(psf_file_name, 'w')
 
     ## start line

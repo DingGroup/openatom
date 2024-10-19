@@ -24,7 +24,27 @@ def make_alchemical_system(
     environment_top: openmm.app.Topology,
     environment_coor: ndarray,
 ) -> Tuple[ET.Element, ndarray]:
-    """Make an alchemical system from ligands and environment."""
+    """Make an alchemical system from ligands and environment.
+    
+    This function merges the ligands and the environment into an alchemical system using the double topology approach. The alchemical system contains one copy of the common particles shared by all the ligands and the environment, and one copy of the soft-core particles from each ligand.
+    Soft-core particles from each ligand are bonded to the common particles. 
+
+    Args:
+        ligs (List[ET.Element]): List of XML elements of the ligands.
+            Each element should be the root of the ligand XML tree.
+        lig_tops (List[openmm.app.Topology]): List of OpenMM topology objects of the ligands.
+        lig_common_particles (List[List[int]]): List of lists of indices of common particles in the ligands.
+        lig_coors (List[ndarray]): List of coordinates of the ligands.
+        lambdas (List[Tuple[float, float]]): List of lambda values for electrostatic and van der Waals interactions.
+        environment (ET.Element): XML element of the environment.
+            It should be the root of the environment XML tree.
+        environment_top (openmm.app.Topology): OpenMM topology object of the environment.
+        environment_coor (ndarray): Coordinates of the environment.
+
+    Returns:
+        Tuple[ET.Element, openmm.app.Topology, ndarray]: Tuple of the XML element of the alchemical system, the OpenMM topology object of the alchemical system, and the coordinates of the alchemical system.
+
+    """
 
     lig_graphs = [make_graph(lig_top) for lig_top in lig_tops]
     for ligand, common_atoms, graph in zip(ligs, lig_common_particles, lig_graphs):
@@ -250,8 +270,8 @@ def _merge_particles_and_topologies(
         environment_topology (openmm.app.Topology): OpenMM topology object of the environment.
 
     Returns:
-        ET.Element: XML element of the merged particles.
-        openmm.app.Topology: OpenMM topology object of the merged system.
+        Tuple[ET.Element, openmm.app.Topology]: Tuple of the XML element of the merged particles and
+            the OpenMM topology object of the merged system.
 
     Note that the function has an intended side effect of setting the "idx" attribute of the
     particles in the ligands and the environment.

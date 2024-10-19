@@ -1,3 +1,3 @@
 from openatom.merge_systems import make_alchemical_system, align_coordinates
 from openatom.mcs import make_graph, compute_mcs_VF2
-from openatom.help_functions import make_psf_from_topology
+from openatom.utils import make_psf_from_topology

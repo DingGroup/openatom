@@ -3,12 +3,11 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-atom documentation
-==================
+OpenAtom: Open Alchemical Transformation of Molecules
+======================================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
-   examples/relative-hydration-free-energy-benzene-phenol/main.ipynb
-   examples/relative-binding-free-energy-protein-ligand/main.ipynb
-
+   examples
+   API
