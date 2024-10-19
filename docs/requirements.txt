@@ -4,3 +4,6 @@ sphinx-copybutton
 nbsphinx
 nbconvert
 sphinx-book-theme
+numpy
+scipy
+networkx
