@@ -304,7 +304,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
 </div></div>
       
     </div>
@@ -320,6 +322,18 @@ document.write(`
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#openatom.make_alchemical_system"><code class="docutils literal notranslate"><span class="pre">make_alchemical_system()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#openatom.align_coordinates"><code class="docutils literal notranslate"><span class="pre">align_coordinates()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#openatom.make_graph"><code class="docutils literal notranslate"><span class="pre">make_graph()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#openatom.compute_mcs_VF2"><code class="docutils literal notranslate"><span class="pre">compute_mcs_VF2()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#openatom.make_psf_from_topology"><code class="docutils literal notranslate"><span class="pre">make_psf_from_topology()</span></code></a></li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -331,6 +345,114 @@ document.write(`
                   
   <section id="api">
 <h1>API<a class="headerlink" href="#api" title="Link to this heading">#</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="openatom.make_alchemical_system">
+<span class="sig-prename descclassname"><span class="pre">openatom.</span></span><span class="sig-name descname"><span class="pre">make_alchemical_system</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ligs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Element</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lig_tops</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Topology</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lig_common_particles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lig_coors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambdas</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">environment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Element</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">environment_top</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Topology</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">environment_coor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Element</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/openatom/merge_systems.html#make_alchemical_system"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openatom.make_alchemical_system" title="Link to this definition">#</a></dt>
+<dd><p>Make an alchemical system from ligands and environment.</p>
+<p>This function merges the ligands and the environment into an alchemical system using the double topology approach. The alchemical system contains one copy of the common particles shared by all the ligands and the environment, and one copy of the soft-core particles from each ligand.
+Soft-core particles from each ligand are bonded to the common particles.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ligs</strong> (<em>List</em><em>[</em><em>ET.Element</em><em>]</em>) – List of XML elements of the ligands.
+Each element should be the root of the ligand XML tree.</p></li>
+<li><p><strong>lig_tops</strong> (<em>List</em><em>[</em><em>openmm.app.Topology</em><em>]</em>) – List of OpenMM topology objects of the ligands.</p></li>
+<li><p><strong>lig_common_particles</strong> (<em>List</em><em>[</em><em>List</em><em>[</em><em>int</em><em>]</em><em>]</em>) – List of lists of indices of common particles in the ligands.</p></li>
+<li><p><strong>lig_coors</strong> (<em>List</em><em>[</em><em>ndarray</em><em>]</em>) – List of coordinates of the ligands.</p></li>
+<li><p><strong>lambdas</strong> (<em>List</em><em>[</em><em>Tuple</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>]</em>) – List of lambda values for electrostatic and van der Waals interactions.</p></li>
+<li><p><strong>environment</strong> (<em>ET.Element</em>) – XML element of the environment.
+It should be the root of the environment XML tree.</p></li>
+<li><p><strong>environment_top</strong> (<em>openmm.app.Topology</em>) – OpenMM topology object of the environment.</p></li>
+<li><p><strong>environment_coor</strong> (<em>ndarray</em>) – Coordinates of the environment.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Tuple of the XML element of the alchemical system, the OpenMM topology object of the alchemical system, and the coordinates of the alchemical system.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[ET.Element, openmm.app.Topology, ndarray]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="openatom.align_coordinates">
+<span class="sig-prename descclassname"><span class="pre">openatom.</span></span><span class="sig-name descname"><span class="pre">align_coordinates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atoms1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atoms2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="_modules/openatom/merge_systems.html#align_coordinates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openatom.align_coordinates" title="Link to this definition">#</a></dt>
+<dd><p>Align the coordinates of x2 to x1 using the atoms specified in atoms1 and atoms2.</p>
+<p>The coordinates of x2 are first rotated and translated to minimize the RMSD between x1[atom1] and x2[atom2]. Then the coordinates of x2[atom2] are set to x1[atom1].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x1</strong> (<em>np.ndarray</em>) – Coordinates of the first molecule.</p></li>
+<li><p><strong>x2</strong> (<em>np.ndarray</em>) – Coordinates of the second molecule.</p></li>
+<li><p><strong>atoms1</strong> (<em>list</em><em>[</em><em>int</em><em>]</em>) – List of atom indices of the first molecule.</p></li>
+<li><p><strong>atoms2</strong> (<em>list</em><em>[</em><em>int</em><em>]</em>) – List of atom indices of the second molecule.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Aligned coordinates of the second molecule.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="openatom.make_graph">
+<span class="sig-prename descclassname"><span class="pre">openatom.</span></span><span class="sig-name descname"><span class="pre">make_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">topology</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Topology</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Graph</span></span></span><a class="reference internal" href="_modules/openatom/mcs.html#make_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openatom.make_graph" title="Link to this definition">#</a></dt>
+<dd><p>Convert an OpenMM topology to a NetworkX graph.</p>
+<p>The nodes of the graph are atoms and the edges are bonds. Each node has an attribute “element”
+which is the element symbol of the atom. If the atom is a hydrogen, the element attribute is
+the concatenation of the element symbols of the atom that the hydrogen is bonded to and the hydrogen. Each edge has an attribute “type” which is the bond type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>topology</strong> (<em>openmm.app.Topology</em>) – OpenMM topology object.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>NetworkX graph of the topology.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>nx.Graph</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="openatom.compute_mcs_VF2">
+<span class="sig-prename descclassname"><span class="pre">openatom.</span></span><span class="sig-name descname"><span class="pre">compute_mcs_VF2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Topology</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Topology</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/openatom/mcs.html#compute_mcs_VF2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openatom.compute_mcs_VF2" title="Link to this definition">#</a></dt>
+<dd><p>Compute the maximum common substructure between two topologies.</p>
+<p>Each topology is converted to a NetworkX graph using the make_graph function and
+the maximum common substructure is computed using the VF2 algorithm implemented in NetworkX
+based on the NetworkX graphs of the topologies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>top1</strong> (<em>openmm.app.Topology</em>) – OpenMM topology object of the first molecule.</p></li>
+<li><p><strong>top2</strong> (<em>openmm.app.Topology</em>) – OpenMM topology object of the second molecule.</p></li>
+<li><p><strong>timeout</strong> (<em>int</em>) – The maximum time in seconds to wait for the computation to finish.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="openatom.make_psf_from_topology">
+<span class="sig-prename descclassname"><span class="pre">openatom.</span></span><span class="sig-name descname"><span class="pre">make_psf_from_topology</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">topology</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">psf_file_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/openatom/utils.html#make_psf_from_topology"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openatom.make_psf_from_topology" title="Link to this definition">#</a></dt>
+<dd><p>Write a PSF file from a topology object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>topology</strong> (<em>openmm.app.Topology</em>) – The topology object.</p></li>
+<li><p><strong>psf_file_name</strong> (<em>str</em>) – The name of the PSF file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 
@@ -359,6 +481,25 @@ document.write(`
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#openatom.make_alchemical_system"><code class="docutils literal notranslate"><span class="pre">make_alchemical_system()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#openatom.align_coordinates"><code class="docutils literal notranslate"><span class="pre">align_coordinates()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#openatom.make_graph"><code class="docutils literal notranslate"><span class="pre">make_graph()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#openatom.compute_mcs_VF2"><code class="docutils literal notranslate"><span class="pre">compute_mcs_VF2()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#openatom.make_psf_from_topology"><code class="docutils literal notranslate"><span class="pre">make_psf_from_topology()</span></code></a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

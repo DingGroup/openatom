@@ -1,0 +1,608 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>openatom.mcs &#8212; atom 0.0.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=5db94ae7"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/openatom/mcs';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/logo.png" class="logo__image only-light" alt="atom 0.0.0 documentation - Home"/>
+    <script>document.write(`<img src="../../_static/logo.png" class="logo__image only-dark" alt="atom 0.0.0 documentation - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../examples.html">Examples</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../examples/relative-hydration-free-energy-benzene-phenol/main.html">Relative hydration free energy between benzene and phenol</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../examples/relative-binding-free-energy-protein-ligand/main.html">Computing relative binding free energies with an alchemical approach</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../../API.html">API</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/DingGroup/openatom" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for openatom.mcs</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">openmm</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span> <span class="k">as</span> <span class="nn">mp</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span>
+
+
+<div class="viewcode-block" id="make_graph">
+<a class="viewcode-back" href="../../API.html#openatom.make_graph">[docs]</a>
+<span class="k">def</span> <span class="nf">make_graph</span><span class="p">(</span><span class="n">topology</span><span class="p">:</span> <span class="n">openmm</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">Topology</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert an OpenMM topology to a NetworkX graph.</span>
+
+<span class="sd">    The nodes of the graph are atoms and the edges are bonds. Each node has an attribute &quot;element&quot;</span>
+<span class="sd">    which is the element symbol of the atom. If the atom is a hydrogen, the element attribute is</span>
+<span class="sd">    the concatenation of the element symbols of the atom that the hydrogen is bonded to and the hydrogen. Each edge has an attribute &quot;type&quot; which is the bond type.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        topology (openmm.app.Topology): OpenMM topology object.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        nx.Graph: NetworkX graph of the topology.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">bond</span> <span class="ow">in</span> <span class="n">topology</span><span class="o">.</span><span class="n">bonds</span><span class="p">():</span>
+        <span class="n">atom1</span><span class="p">,</span> <span class="n">atom2</span> <span class="o">=</span> <span class="n">bond</span><span class="o">.</span><span class="n">atom1</span><span class="p">,</span> <span class="n">bond</span><span class="o">.</span><span class="n">atom2</span>
+        <span class="n">symbol1</span><span class="p">,</span> <span class="n">symbol2</span> <span class="o">=</span> <span class="n">atom1</span><span class="o">.</span><span class="n">element</span><span class="o">.</span><span class="n">symbol</span><span class="p">,</span> <span class="n">atom2</span><span class="o">.</span><span class="n">element</span><span class="o">.</span><span class="n">symbol</span>
+
+        <span class="c1">## add atom1 and atom2 as nodes, with element as the node attribute</span>
+        <span class="k">if</span> <span class="n">symbol1</span> <span class="o">==</span> <span class="s2">&quot;H&quot;</span><span class="p">:</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">atom1</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="n">symbol2</span> <span class="o">+</span> <span class="n">symbol1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">atom1</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="n">symbol1</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">symbol2</span> <span class="o">==</span> <span class="s2">&quot;H&quot;</span><span class="p">:</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">atom2</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="n">symbol1</span> <span class="o">+</span> <span class="n">symbol2</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">atom2</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">element</span><span class="o">=</span><span class="n">symbol2</span><span class="p">)</span>
+
+        <span class="c1">## add the bond between atom1 and atom2 as an edge, with its type as the edge attribute</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">atom1</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">atom2</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">bond</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
+
+        <span class="c1">## we sometimes want to associate extra information with the atoms besides the element</span>
+        <span class="c1">## to do this, we can add a label attribute to the atom in the input topology</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">atom1</span><span class="p">,</span> <span class="s2">&quot;label&quot;</span><span class="p">):</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">atom1</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">atom1</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">atom2</span><span class="p">,</span> <span class="s2">&quot;label&quot;</span><span class="p">):</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">atom2</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">atom2</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
+
+    <span class="c1">## add the degree of each node as an attribute</span>
+    <span class="n">nx</span><span class="o">.</span><span class="n">set_node_attributes</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">degree</span><span class="p">),</span> <span class="s2">&quot;degree&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">g</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">compute_mapping</span><span class="p">(</span><span class="n">ga</span><span class="p">:</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">,</span> <span class="n">gb</span><span class="p">:</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the subgraph isomorphism between ga and gb starting from source node in gb.</span>
+
+<span class="sd">    ga is assumed to be the bigger graph and gb is the smaller graph.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        ga (nx.Graph): NetworkX graph of the bigger molecule.</span>
+<span class="sd">        gb (nx.Graph): NetworkX graph of the smaller molecule.</span>
+<span class="sd">        source (int): The node in gb to start the subgraph isomorphism from.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: A dictionary where the keys are the node indices of the bigger molecule and</span>
+<span class="sd">        the values are the node indices of the smaller molecule that are in the common</span>
+<span class="sd">        substructure</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">gb_copy</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">gb</span><span class="p">)</span>
+
+    <span class="c1">#### start with the whole graph of gb, we will remove nodes from gb one node at a time</span>
+    <span class="c1">#### until that the remaining subgraph of gb is isomorphic to a subgraph of ga</span>
+
+    <span class="c1">## we will remove nodes from gb in a breadth-first search order starting from source</span>
+    <span class="c1">## the source node is assume to be a node with degree 1, i.e. at atom with only one bond</span>
+    <span class="n">bfs_successors</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">bfs_successors</span><span class="p">(</span><span class="n">gb_copy</span><span class="p">,</span> <span class="n">source</span><span class="p">))</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">v</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">bfs_successors</span><span class="p">]))</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
+
+    <span class="c1">## node matching function</span>
+    <span class="n">nm</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">isomorphism</span><span class="o">.</span><span class="n">categorical_node_match</span><span class="p">(</span>
+        <span class="p">[</span><span class="s2">&quot;element&quot;</span><span class="p">,</span> <span class="s2">&quot;degree&quot;</span><span class="p">,</span> <span class="s2">&quot;label&quot;</span><span class="p">],</span> <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="c1">## edge matching function</span>
+    <span class="n">em</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">isomorphism</span><span class="o">.</span><span class="n">categorical_edge_match</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+    
+    <span class="n">core</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+        <span class="n">gb_copy</span><span class="o">.</span><span class="n">remove_node</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="n">gm</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">isomorphism</span><span class="o">.</span><span class="n">GraphMatcher</span><span class="p">(</span>
+            <span class="n">ga</span><span class="p">,</span> <span class="n">gb_copy</span><span class="p">,</span> <span class="n">node_match</span><span class="o">=</span><span class="n">nm</span><span class="p">,</span> <span class="n">edge_match</span><span class="o">=</span><span class="n">em</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">gm</span><span class="o">.</span><span class="n">subgraph_is_isomorphic</span><span class="p">():</span>
+            <span class="n">core</span> <span class="o">=</span> <span class="n">gm</span><span class="o">.</span><span class="n">mapping</span>
+            <span class="k">break</span>
+
+    <span class="c1">## if we cannot find a subgraph of gb that is isomorphic to a subgraph of ga</span>
+    <span class="c1">## by removing nodes from gb, we give up at this point</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">core</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{}</span>
+
+    <span class="c1">## starting from the subgraph of gb discovered above, we will grow the subgraph</span>
+    <span class="c1">## by adding one node at a time and check if the subgraph is isomorphic to a subgraph of ga</span>
+    <span class="n">source</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">core</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">subnodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">source</span><span class="p">]</span>
+    <span class="n">bfs_successors</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">bfs_successors</span><span class="p">(</span><span class="n">gb</span><span class="p">,</span> <span class="n">source</span><span class="p">))</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">v</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">bfs_successors</span><span class="p">]))</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+        <span class="n">gm</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">isomorphism</span><span class="o">.</span><span class="n">GraphMatcher</span><span class="p">(</span>
+            <span class="n">ga</span><span class="p">,</span> <span class="n">nx</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">gb</span><span class="p">,</span> <span class="n">subnodes</span> <span class="o">+</span> <span class="p">[</span><span class="n">n</span><span class="p">]),</span> <span class="n">node_match</span><span class="o">=</span><span class="n">nm</span><span class="p">,</span> <span class="n">edge_match</span><span class="o">=</span><span class="n">em</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">gm</span><span class="o">.</span><span class="n">subgraph_is_isomorphic</span><span class="p">():</span>
+            <span class="n">subnodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+
+    <span class="n">gm</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">isomorphism</span><span class="o">.</span><span class="n">GraphMatcher</span><span class="p">(</span>
+        <span class="n">ga</span><span class="p">,</span> <span class="n">nx</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="n">gb</span><span class="p">,</span> <span class="n">subnodes</span><span class="p">),</span> <span class="n">node_match</span><span class="o">=</span><span class="n">nm</span><span class="p">,</span> <span class="n">edge_match</span><span class="o">=</span><span class="n">em</span>
+    <span class="p">)</span>
+
+    <span class="n">gm</span><span class="o">.</span><span class="n">subgraph_is_isomorphic</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">gm</span><span class="o">.</span><span class="n">mapping</span>
+
+
+<div class="viewcode-block" id="compute_mcs_VF2">
+<a class="viewcode-back" href="../../API.html#openatom.compute_mcs_VF2">[docs]</a>
+<span class="k">def</span> <span class="nf">compute_mcs_VF2</span><span class="p">(</span>
+    <span class="n">top1</span><span class="p">:</span> <span class="n">openmm</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">Topology</span><span class="p">,</span> <span class="n">top2</span><span class="p">:</span> <span class="n">openmm</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">Topology</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the maximum common substructure between two topologies.</span>
+
+<span class="sd">    Each topology is converted to a NetworkX graph using the make_graph function and</span>
+<span class="sd">    the maximum common substructure is computed using the VF2 algorithm implemented in NetworkX</span>
+<span class="sd">    based on the NetworkX graphs of the topologies.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        top1 (openmm.app.Topology): OpenMM topology object of the first molecule.</span>
+<span class="sd">        top2 (openmm.app.Topology): OpenMM topology object of the second molecule.</span>
+<span class="sd">        timeout (int): The maximum time in seconds to wait for the computation to finish.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">top1</span><span class="o">.</span><span class="n">getNumAtoms</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">top2</span><span class="o">.</span><span class="n">getNumAtoms</span><span class="p">():</span>
+        <span class="n">top_large</span><span class="p">,</span> <span class="n">top_small</span> <span class="o">=</span> <span class="n">top1</span><span class="p">,</span> <span class="n">top2</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;first&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">top_large</span><span class="p">,</span> <span class="n">top_small</span> <span class="o">=</span> <span class="n">top2</span><span class="p">,</span> <span class="n">top1</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;second&quot;</span>
+
+    <span class="n">gl</span> <span class="o">=</span> <span class="n">make_graph</span><span class="p">(</span><span class="n">top_large</span><span class="p">)</span>
+    <span class="n">gs</span> <span class="o">=</span> <span class="n">make_graph</span><span class="p">(</span><span class="n">top_small</span><span class="p">)</span>
+
+    <span class="n">nodes_with_one_bond</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">gs</span><span class="o">.</span><span class="n">nodes</span> <span class="k">if</span> <span class="n">gs</span><span class="o">.</span><span class="n">degree</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">mp</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">16</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes_with_one_bond</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">16</span><span class="p">:</span>
+        <span class="n">num_processes</span> <span class="o">=</span> <span class="mi">16</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">num_processes</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">mp</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">(),</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes_with_one_bond</span><span class="p">))</span>
+
+    <span class="n">mappings</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">with</span> <span class="n">mp</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="n">num_processes</span><span class="p">)</span> <span class="k">as</span> <span class="n">pool</span><span class="p">:</span>
+        <span class="n">futures</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">pool</span><span class="o">.</span><span class="n">apply_async</span><span class="p">(</span><span class="n">compute_mapping</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">gl</span><span class="p">,</span> <span class="n">gs</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nodes_with_one_bond</span>
+        <span class="p">]</span>
+        <span class="n">pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">future</span> <span class="ow">in</span> <span class="n">futures</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">mapping</span> <span class="o">=</span> <span class="n">future</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+                <span class="n">mappings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mapping</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">mp</span><span class="o">.</span><span class="n">TimeoutError</span><span class="p">:</span>
+                <span class="kc">None</span>
+
+    <span class="n">M</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">mappings</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">M</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{}</span>
+
+    <span class="n">mappings</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">mappings</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="o">==</span> <span class="n">M</span><span class="p">]</span>
+    <span class="n">mapping</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">mappings</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">sum</span><span class="p">([</span><span class="nb">abs</span><span class="p">(</span><span class="n">k</span> <span class="o">-</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">items</span><span class="p">()]))</span>
+
+    <span class="n">subgraph_large</span> <span class="o">=</span> <span class="n">gl</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+    <span class="n">components</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">subgraph_large</span><span class="p">))</span>
+    <span class="n">len_components</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">components</span><span class="p">]</span>
+    <span class="n">largest_component</span> <span class="o">=</span> <span class="n">components</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">len_components</span><span class="p">)]</span>
+
+    <span class="n">connected_lcs</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="n">mapping</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">largest_component</span><span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;first&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">connected_lcs</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">connected_lcs</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">compute_mcs_ISMAGS</span><span class="p">(</span><span class="n">top1</span><span class="p">:</span> <span class="n">openmm</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">Topology</span><span class="p">,</span> <span class="n">top2</span><span class="p">:</span> <span class="n">openmm</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">Topology</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute the maximum common substructure between two topologies.</span>
+
+<span class="sd">    Each topology is converted to a NetworkX graph using the make_graph function and</span>
+<span class="sd">    the maximum common substructure is computed using the ISMAGS algorithm implemented in NetworkX</span>
+<span class="sd">    based on the NetworkX graphs of the topologies.</span>
+
+<span class="sd">    Note: This function is slower than compute_mcs_VF2.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        top1 (openmm.app.Topology): OpenMM topology object of the first molecule.</span>
+<span class="sd">        top2 (openmm.app.Topology): OpenMM topology object of the second molecule.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: A dictionary where the keys are the atom indices of the first molecule and</span>
+<span class="sd">        the values are the atom indices of the second molecule that are in the common</span>
+<span class="sd">        substructure.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">top1</span><span class="o">.</span><span class="n">getNumAtoms</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">top2</span><span class="o">.</span><span class="n">getNumAtoms</span><span class="p">():</span>
+        <span class="n">top_large</span><span class="p">,</span> <span class="n">top_small</span> <span class="o">=</span> <span class="n">top1</span><span class="p">,</span> <span class="n">top2</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;first&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">top_large</span><span class="p">,</span> <span class="n">top_small</span> <span class="o">=</span> <span class="n">top2</span><span class="p">,</span> <span class="n">top1</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;second&quot;</span>
+
+    <span class="n">graph_large</span> <span class="o">=</span> <span class="n">make_graph</span><span class="p">(</span><span class="n">top_large</span><span class="p">)</span>
+    <span class="n">graph_small</span> <span class="o">=</span> <span class="n">make_graph</span><span class="p">(</span><span class="n">top_small</span><span class="p">)</span>
+    <span class="n">nm</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">isomorphism</span><span class="o">.</span><span class="n">categorical_node_match</span><span class="p">(</span>
+        <span class="p">[</span><span class="s2">&quot;element&quot;</span><span class="p">,</span> <span class="s2">&quot;degree&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">em</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">isomorphism</span><span class="o">.</span><span class="n">categorical_edge_match</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+    <span class="n">isomag</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">isomorphism</span><span class="o">.</span><span class="n">ISMAGS</span><span class="p">(</span>
+        <span class="n">graph_large</span><span class="p">,</span> <span class="n">graph_small</span><span class="p">,</span> <span class="n">node_match</span><span class="o">=</span><span class="n">nm</span><span class="p">,</span> <span class="n">edge_match</span><span class="o">=</span><span class="n">em</span>
+    <span class="p">)</span>
+    <span class="n">lcss</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">isomag</span><span class="o">.</span><span class="n">largest_common_subgraph</span><span class="p">())</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lcss</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="ne">Warning</span><span class="p">(</span>
+            <span class="s2">&quot;More than one largest common substructures found. Returning the first one.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">lcs</span> <span class="o">=</span> <span class="n">lcss</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">subgraph_large</span> <span class="o">=</span> <span class="n">graph_large</span><span class="o">.</span><span class="n">subgraph</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">lcs</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+
+    <span class="n">components</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">subgraph_large</span><span class="p">))</span>
+    <span class="n">len_components</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">components</span><span class="p">]</span>
+    <span class="n">largest_component</span> <span class="o">=</span> <span class="n">components</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">len_components</span><span class="p">)]</span>
+
+    <span class="n">connected_lcs</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="n">lcs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">largest_component</span><span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;first&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">connected_lcs</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">connected_lcs</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Xinqiang Ding
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, Xinqiang Ding.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
