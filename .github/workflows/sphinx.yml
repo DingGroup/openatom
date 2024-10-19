@@ -18,7 +18,7 @@ jobs:
         python-version: 3.12  # Specify the Python version if needed
         auto-update-conda: true  # Update to the latest version of Conda
         activate-environment: my-env  # Name of the environment you want to create
-        environment-file: environment.yml
+        #environment-file: environment.yml
 
     - name: Install Conda Dependencies
       run: |
