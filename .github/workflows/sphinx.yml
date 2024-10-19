@@ -22,8 +22,9 @@ jobs:
 
     - name: Install Conda Dependencies
       run: |
+        conda init bash  # Initialize Conda in the current shell
+        source ~/.bashrc  # Reload the shell for Conda changes to take effect
         conda create --name my-env python=3.8 -y    
-        conda init   
         conda activate my-env
         conda install -c conda-forge openmm -y
     
