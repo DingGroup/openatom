@@ -7,3 +7,4 @@ sphinx-book-theme
 numpy
 scipy
 networkx
+ipython
