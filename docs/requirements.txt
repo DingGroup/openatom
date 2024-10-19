@@ -1,2 +1,5 @@
-uv
 pandoc
+sphinx>=5.0
+sphinx-copybutton
+nbsphinx
+nbconvert
