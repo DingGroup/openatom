@@ -38,6 +38,7 @@ jobs:
       
     - name: Run tests or build documentation
       run: |
+        conda init bash 
         conda activate my-env
         cd docs
         make html
