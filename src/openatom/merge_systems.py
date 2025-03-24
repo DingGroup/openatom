@@ -1179,4 +1179,4 @@ def _increment_atom_name(atom_name):
         return letters + new_number
     else:
         # Return original if no digits found
-        return atom_name
+        return atom_name + "1"

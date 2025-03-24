@@ -4,6 +4,13 @@ import numpy as np
 import copy
 import multiprocessing as mp
 from itertools import chain
+try: 
+    import rdkit
+    from rdkit import Chem
+    from rdkit.Chem import rdFMCS
+    HAS_RDKIT = True
+except ImportError:
+    HAS_RDKIT = False
 
 
 def make_graph(topology: openmm.app.Topology) -> nx.Graph:
@@ -247,3 +254,155 @@ def compute_mcs_ISMAGS(top1: openmm.app.Topology, top2: openmm.app.Topology) -> 
         return connected_lcs
     else:
         return {v: k for k, v in connected_lcs.items()}
+
+def topology_to_rdkit(topology: openmm.app.Topology, exclude_labels=None) -> "rdkit.Chem.Mol":
+    """Convert an OpenMM topology to an RDKit molecule.
+    
+    Args:
+        topology (openmm.app.Topology): OpenMM topology object.
+        
+    Returns:
+        rdkit.Chem.Mol: RDKit molecule object with OpenMMIndex property on each atom.
+    """
+    if not HAS_RDKIT:
+        return None
+    
+    exclude_labels = exclude_labels or []
+    exclude_atoms = set()
+    if exclude_labels:
+        for atom in topology.atoms():
+            if hasattr(atom, "label") and atom.label in exclude_labels:
+                exclude_atoms.add(atom.index)
+    mol = Chem.EditableMol(Chem.Mol())
+    
+    atom_idx_map = {}  
+    for atom in topology.atoms():
+        element = atom.element.symbol
+        if element == 'D':  
+            rd_atom = Chem.Atom('H')
+            rd_atom.SetIsotope(2)
+        else:
+            rd_atom = Chem.Atom(element)
+        
+        if atom.index in exclude_atoms:
+            rd_atom.SetAtomicNum(114)  # dummy atom
+
+        charge = 0
+        if hasattr(atom, 'formalCharge') and atom.formalCharge is not None:
+            charge = atom.formalCharge
+        rd_atom.SetFormalCharge(charge)
+        
+
+        idx = mol.AddAtom(rd_atom)
+        atom_idx_map[atom.index] = idx
+    
+
+    for bond in topology.bonds():
+        i = atom_idx_map[bond.atom1.index]
+        j = atom_idx_map[bond.atom2.index]
+        
+        bond_type = Chem.BondType.SINGLE
+        if hasattr(bond, 'type'):
+            if bond.type == 'double':
+                bond_type = Chem.BondType.DOUBLE
+            elif bond.type == 'triple':
+                bond_type = Chem.BondType.TRIPLE
+            elif bond.type == 'aromatic':
+                bond_type = Chem.BondType.AROMATIC
+        
+        mol.AddBond(i, j, bond_type)
+    
+
+    rdkit_mol = mol.GetMol()
+    
+
+    for omm_idx, rd_idx in atom_idx_map.items():
+        rdkit_mol.GetAtomWithIdx(rd_idx).SetProp('OpenMMIndex', str(omm_idx))
+        rdkit_mol.GetAtomWithIdx(rd_idx).SetProp('Excluded', 
+                                              'True' if omm_idx in exclude_atoms else 'False')
+    
+    try:
+        Chem.SanitizeMol(rdkit_mol)
+        return rdkit_mol
+    except Exception as e:
+        import warnings
+        warnings.warn(f"RDKit sanitization failed: {str(e)}. Returning unsanitized molecule.")
+        return rdkit_mol
+
+
+def compute_mcs_RDKit(top1: openmm.app.Topology, top2: openmm.app.Topology, **kwargs) -> dict:
+    """Compute the maximum common substructure between two topologies using RDKit.
+
+    Args:
+        top1 (openmm.app.Topology): OpenMM topology object of the first molecule.
+        top2 (openmm.app.Topology): OpenMM topology object of the second molecule.
+        **kwargs: Keyword arguments to be passed to the RDKit MCS function.
+            
+
+    Returns:
+        dict: A dictionary where the keys are the atom indices of the first molecule and
+        the values are the atom indices of the second molecule that are in the common
+        substructure.
+
+    """
+    if not HAS_RDKIT:
+        import warnings
+        warnings.warn("RDKit is not installed. Please install RDKit to use this function.")
+        return {}
+    
+    # parameters for the MCS algorithm
+    default_params = {
+        'atomCompare': rdFMCS.AtomCompare.CompareIsotopes,
+        'bondCompare': rdFMCS.BondCompare.CompareOrder,
+        'matchValences': False,
+        'ringMatchesRingOnly': True,
+        'completeRingsOnly': True,
+        'timeout': 60  # seconds
+    }
+    mcs_params = default_params.copy()
+    mcs_params.update(kwargs)
+    mol1 = topology_to_rdkit(top1)
+    mol2 = topology_to_rdkit(top2)
+    
+    if mol1 is None or mol2 is None:
+        return {}
+    
+    # Use RDKit to find MCS
+    mcs_result = rdFMCS.FindMCS([mol1, mol2], **mcs_params)
+    
+    if mcs_result.numAtoms == 0:
+        return {}
+    
+    # Get the MCS as a molecule
+    mcs_mol = Chem.MolFromSmarts(mcs_result.smartsString)
+    
+    # Find atom mappings
+    match1 = mol1.GetSubstructMatch(mcs_mol)
+    match2 = mol2.GetSubstructMatch(mcs_mol)
+    
+    if not match1 or not match2:
+        return {}
+    
+    # Create mapping between original topologies
+    mapping = {}
+    for i, j in zip(match1, match2):
+        openmmidx1 = int(mol1.GetAtomWithIdx(i).GetProp('OpenMMIndex'))
+        openmmidx2 = int(mol2.GetAtomWithIdx(j).GetProp('OpenMMIndex'))
+        mapping[openmmidx1] = openmmidx2
+    graph = nx.Graph()
+    for i, j in mapping.items():
+        graph.add_node(i)
+    for i, j in mapping.items():
+        for neighbor in list(graph.nodes):
+            if i != neighbor and any(b.atom1.index == i and b.atom2.index == neighbor 
+                                      for b in top1.bonds()):
+                graph.add_edge(i, neighbor)
+    
+    components = list(nx.connected_components(graph))
+    if not components:
+        return {}
+    
+    largest_component = max(components, key=len)
+    connected_mapping = {i: mapping[i] for i in largest_component}
+    
+    return connected_mapping
