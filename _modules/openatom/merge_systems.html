@@ -27,8 +27,8 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -282,25 +282,25 @@ document.write(`
                 <article class="bd-article">
                   
   <h1>Source code for openatom.merge_systems</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
-<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Iterator</span>
-<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">ndarray</span>
-<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
-<span class="kn">import</span> <span class="nn">openmm</span>
-<span class="kn">import</span> <span class="nn">openmm.app</span>
-<span class="kn">import</span> <span class="nn">xml.etree.ElementTree</span> <span class="k">as</span> <span class="nn">ET</span>
-<span class="kn">import</span> <span class="nn">copy</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">scipy.spatial.transform</span> <span class="kn">import</span> <span class="n">Rotation</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
-<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">combinations</span><span class="p">,</span> <span class="n">product</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">openatom.mcs</span> <span class="kn">import</span> <span class="n">make_graph</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">ndarray</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">networkx</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nx</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">openmm</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">openmm.app</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xml.etree.ElementTree</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ET</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.spatial.transform</span><span class="w"> </span><span class="kn">import</span> <span class="n">Rotation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">itertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">combinations</span><span class="p">,</span> <span class="n">product</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">openatom.mcs</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_graph</span>
 
 
 <div class="viewcode-block" id="make_alchemical_system">
 <a class="viewcode-back" href="../../API.html#openatom.make_alchemical_system">[docs]</a>
-<span class="k">def</span> <span class="nf">make_alchemical_system</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">make_alchemical_system</span><span class="p">(</span>
     <span class="n">ligs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">],</span>
     <span class="n">lig_tops</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">openmm</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">Topology</span><span class="p">],</span>
     <span class="n">lig_common_particles</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
@@ -402,7 +402,7 @@ document.write(`
 
 <div class="viewcode-block" id="align_coordinates">
 <a class="viewcode-back" href="../../API.html#openatom.align_coordinates">[docs]</a>
-<span class="k">def</span> <span class="nf">align_coordinates</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">align_coordinates</span><span class="p">(</span>
     <span class="n">x1</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">x2</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">atoms1</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">atoms2</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Align the coordinates of x2 to x1 using the atoms specified in atoms1 and atoms2.</span>
@@ -430,7 +430,7 @@ document.write(`
 
 
 
-<span class="k">def</span> <span class="nf">label_particles</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">label_particles</span><span class="p">(</span>
     <span class="n">ligand</span><span class="p">:</span> <span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">,</span> <span class="n">common_particles</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">graph</span><span class="p">:</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot; This function has two main purposes:</span>
@@ -533,7 +533,7 @@ document.write(`
     <span class="n">ligand</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bonded_terms</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_merge_particles_and_topologies</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_merge_particles_and_topologies</span><span class="p">(</span>
     <span class="n">ligands</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">],</span>
     <span class="n">ligand_topologies</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">openmm</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">Topology</span><span class="p">],</span>
     <span class="n">common_particles</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
@@ -663,7 +663,7 @@ document.write(`
     <span class="k">return</span> <span class="n">particles</span><span class="p">,</span> <span class="n">topology</span>
 
 
-<span class="k">def</span> <span class="nf">_merge_constraints</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_merge_constraints</span><span class="p">(</span>
     <span class="n">ligands</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">],</span> <span class="n">environment</span><span class="p">:</span> <span class="n">ET</span><span class="o">.</span><span class="n">Element</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Merge the constraints of ligands and environment.</span>
@@ -717,11 +717,11 @@ document.write(`
     <span class="k">return</span> <span class="n">cons</span>
 
 
-<span class="k">def</span> <span class="nf">_get_idx</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">,</span> <span class="n">idxs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_idx</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">,</span> <span class="n">idxs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
     <span class="k">return</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">root</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;./Particles&quot;</span><span class="p">)[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;idx&quot;</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">idxs</span><span class="p">]</span>
 
 
-<span class="k">def</span> <span class="nf">_merge_harmonic_bonds</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_merge_harmonic_bonds</span><span class="p">(</span>
     <span class="n">ligands</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">],</span> <span class="n">lambdas</span><span class="p">:</span> <span class="nb">list</span><span class="p">[(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">)],</span> <span class="n">environment</span><span class="p">:</span> <span class="n">ET</span><span class="o">.</span><span class="n">Element</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">:</span>
     <span class="n">force</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span>
@@ -825,7 +825,7 @@ document.write(`
     <span class="k">return</span> <span class="n">force</span>
 
 
-<span class="k">def</span> <span class="nf">_merge_harmonic_angles</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_merge_harmonic_angles</span><span class="p">(</span>
     <span class="n">ligands</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">],</span>
     <span class="n">lambdas</span><span class="p">:</span> <span class="nb">list</span><span class="p">[(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">)],</span>
     <span class="n">environment</span><span class="p">:</span> <span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">,</span>
@@ -947,7 +947,7 @@ document.write(`
     <span class="k">return</span> <span class="n">force</span>
 
 
-<span class="k">def</span> <span class="nf">_merge_periodic_torsions</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_merge_periodic_torsions</span><span class="p">(</span>
     <span class="n">ligands</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">],</span>
     <span class="n">lambdas</span><span class="p">:</span> <span class="nb">list</span><span class="p">[(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">)],</span>
     <span class="n">environment</span><span class="p">:</span> <span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">,</span>
@@ -1090,7 +1090,7 @@ document.write(`
     <span class="k">return</span> <span class="n">force</span>
 
 
-<span class="k">def</span> <span class="nf">_merge_nonbonded_forces</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_merge_nonbonded_forces</span><span class="p">(</span>
     <span class="n">ligands</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">],</span>
     <span class="n">lambdas</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
     <span class="n">environment</span><span class="p">:</span> <span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">,</span>
@@ -1261,7 +1261,7 @@ document.write(`
     <span class="k">return</span> <span class="n">force</span>
 
 
-<span class="k">def</span> <span class="nf">_make_custom_nonbonded_force</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_make_custom_nonbonded_force</span><span class="p">(</span>
     <span class="n">ligands</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">],</span>
     <span class="n">lambdas</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
     <span class="n">environment</span><span class="p">:</span> <span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">,</span>
@@ -1442,7 +1442,7 @@ document.write(`
     <span class="k">return</span> <span class="n">force</span>
 
 
-<span class="k">def</span> <span class="nf">_make_cmmotion_remover</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_make_cmmotion_remover</span><span class="p">():</span>
     <span class="n">force</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span>
         <span class="s2">&quot;Force&quot;</span><span class="p">,</span>
         <span class="p">{</span>
@@ -1456,7 +1456,7 @@ document.write(`
     <span class="k">return</span> <span class="n">force</span>
 
 
-<span class="k">def</span> <span class="nf">_increment_atom_name</span><span class="p">(</span><span class="n">atom_name</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_increment_atom_name</span><span class="p">(</span><span class="n">atom_name</span><span class="p">):</span>
     <span class="c1"># Use regular expressions to find all non-digit and digit parts of the string</span>
     <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;([a-zA-Z]+)(\d+)&quot;</span><span class="p">,</span> <span class="n">atom_name</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
@@ -1469,7 +1469,7 @@ document.write(`
         <span class="k">return</span> <span class="n">letters</span> <span class="o">+</span> <span class="n">new_number</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># Return original if no digits found</span>
-        <span class="k">return</span> <span class="n">atom_name</span>
+        <span class="k">return</span> <span class="n">atom_name</span> <span class="o">+</span> <span class="s2">&quot;1&quot;</span>
 </pre></div>
 
                 </article>
